@@ -36,3 +36,19 @@ Database: MongoDB
 
 Utilities: Cloudinary, Nodemailer, Paytm QR
 
+<img width="1890" height="954" alt="Screenshot 2025-09-06 103252" src="https://github.com/user-attachments/assets/1baa7c1c-feaa-404f-b8ec-23ad323d4c86" />
+
+Home page after user/admin login
+
+<img width="1894" height="953" alt="Screenshot 2025-09-06 103314" src="https://github.com/user-attachments/assets/14cdc8b1-3c79-4834-a5ec-e26c7dae8eb8" />
+
+Admin pannel 
+that's admin can handle it..
+
+<img width="1884" height="956" alt="Screenshot 2025-09-06 103343" src="https://github.com/user-attachments/assets/33ccff3c-88e4-40de-9889-ccd0c964f692" />
+
+Product page were display all the products
+
+<img width="1886" height="958" alt="Screenshot 2025-09-06 103359" src="https://github.com/user-attachments/assets/d86e6baf-a6f8-455a-bb7f-0e459162b540" />
+
+Order page were display all the past order of user
