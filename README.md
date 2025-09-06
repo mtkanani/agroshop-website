@@ -35,3 +35,4 @@ Backend: Node.js, Express
 Database: MongoDB
 
 Utilities: Cloudinary, Nodemailer, Paytm QR
+
