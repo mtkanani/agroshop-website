@@ -10,6 +10,7 @@ const {
 const router = express.Router();
 
 router.get('/', getCategories);
+router.get('/setup-agriculture-public', createAgricultureCategories);
 router.post('/', protect, admin, createCategory);
 router.post('/setup-agriculture', protect, admin, createAgricultureCategories);
 router.put('/:id', protect, admin, updateCategory);
