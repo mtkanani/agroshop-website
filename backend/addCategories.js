@@ -5,7 +5,7 @@ require('dotenv').config();
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGO_URI || process.env.MONGODB_URI);
     console.log('MongoDB Connected');
   } catch (error) {
     console.error('MongoDB connection error:', error);
@@ -37,11 +37,11 @@ const agricultureCategories = [
 const addCategories = async () => {
   try {
     console.log('Starting to add agriculture categories...');
-    
+
     for (const category of agricultureCategories) {
       // Check if category already exists
       const existingCategory = await Category.findOne({ name: category.name });
-      
+
       if (existingCategory) {
         console.log(`Category "${category.name}" already exists, skipping...`);
       } else {
@@ -50,16 +50,16 @@ const addCategories = async () => {
         console.log(`✅ Added category: ${category.name}`);
       }
     }
-    
+
     console.log('\n🎉 All categories processed successfully!');
-    
+
     // Display all categories
     const allCategories = await Category.find();
     console.log('\n📋 Current categories in database:');
     allCategories.forEach(cat => {
       console.log(`- ${cat.name}: ${cat.description}`);
     });
-    
+
   } catch (error) {
     console.error('Error adding categories:', error);
   } finally {
