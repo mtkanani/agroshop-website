@@ -23,7 +23,15 @@ import {
   Paper,
   Snackbar,
   Alert,
-  CircularProgress
+  CircularProgress,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider
 } from '@mui/material';
 import { 
   ShoppingCart,
@@ -38,7 +46,8 @@ import {
   Support,
   Security,
   Add as AddIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
+  Menu as MenuIcon
 } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { submitSuccessStory } from './api/successStoryApi';
@@ -120,21 +129,22 @@ function AppNav() {
   const { items } = useSelector(state => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
     navigate('/');
+    setDrawerOpen(false);
   };
 
   const cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-      <Toolbar sx={{ px: { xs: 1, sm: 3 } }}>
+      <Toolbar sx={{ px: { xs: 2, sm: 3 }, justifyContent: 'space-between' }}>
         <Typography 
           variant="h6" 
           sx={{ 
-            flexGrow: 1, 
             fontWeight: 'bold',
             cursor: 'pointer',
             display: 'flex',
@@ -146,6 +156,7 @@ function AppNav() {
           🌾 Agro Shop
         </Typography>
         
+        {/* Desktop Navigation Links */}
         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
           <Button 
             color="inherit" 
@@ -213,10 +224,186 @@ function AppNav() {
               >
                 Login
               </Button>
-              
+              <Button 
+                color="inherit" 
+                startIcon={<RegisterIcon />}
+                onClick={() => navigate('/register')}
+              >
+                Register
+              </Button>
             </>
           )}
         </Box>
+
+        {/* Mobile Navigation Icons */}
+        <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center' }}>
+          <IconButton 
+            color="inherit" 
+            onClick={() => navigate('/cart')} 
+            sx={{ mr: 1 }}
+          >
+            <Badge badgeContent={cartItemCount} color="error">
+              <ShoppingCart />
+            </Badge>
+          </IconButton>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="end"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Box>
+
+        {/* Temporary Drawer for Mobile Navigation */}
+        <Drawer
+          anchor="right"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          PaperProps={{
+            sx: {
+              width: 280,
+              bgcolor: '#F5F5F5',
+            }
+          }}
+        >
+          <Box
+            sx={{ width: 280, display: 'flex', flexDirection: 'column', height: '100%' }}
+            role="presentation"
+            onClick={() => setDrawerOpen(false)}
+            onKeyDown={() => setDrawerOpen(false)}
+          >
+            {/* Drawer Header */}
+            <Box sx={{ 
+              bgcolor: '#2E7D32', 
+              color: 'white', 
+              p: 2.5, 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between' 
+            }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+                🌾 Agro Navigation
+              </Typography>
+              <IconButton color="inherit" onClick={() => setDrawerOpen(false)}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+            <Divider />
+
+            {/* List of Navigation Actions */}
+            <List sx={{ px: 1, py: 2 }}>
+              <ListItem disablePadding sx={{ mb: 1 }}>
+                <ListItemButton 
+                  onClick={() => navigate('/')}
+                  sx={{ borderRadius: 2, '&:hover': { bgcolor: 'rgba(46, 125, 50, 0.08)' } }}
+                >
+                  <ListItemIcon sx={{ color: '#2E7D32' }}><HomeIcon /></ListItemIcon>
+                  <ListItemText primary="Home" primaryTypographyProps={{ fontWeight: 600, color: '#2E7D32' }} />
+                </ListItemButton>
+              </ListItem>
+
+              <ListItem disablePadding sx={{ mb: 1 }}>
+                <ListItemButton 
+                  onClick={() => navigate('/products')}
+                  sx={{ borderRadius: 2, '&:hover': { bgcolor: 'rgba(46, 125, 50, 0.08)' } }}
+                >
+                  <ListItemIcon sx={{ color: '#2E7D32' }}><Store /></ListItemIcon>
+                  <ListItemText primary="Products" primaryTypographyProps={{ fontWeight: 600, color: '#2E7D32' }} />
+                </ListItemButton>
+              </ListItem>
+
+              {userInfo ? (
+                <>
+                  <Divider sx={{ my: 1.5 }} />
+                  
+                  <ListItem disablePadding sx={{ mb: 1 }}>
+                    <ListItemButton 
+                      onClick={() => navigate('/profile')}
+                      sx={{ borderRadius: 2, '&:hover': { bgcolor: 'rgba(46, 125, 50, 0.08)' } }}
+                    >
+                      <ListItemIcon sx={{ color: '#2E7D32' }}><Person /></ListItemIcon>
+                      <ListItemText primary="Profile" primaryTypographyProps={{ fontWeight: 500 }} />
+                    </ListItemButton>
+                  </ListItem>
+
+                  <ListItem disablePadding sx={{ mb: 1 }}>
+                    <ListItemButton 
+                      onClick={() => navigate('/orders')}
+                      sx={{ borderRadius: 2, '&:hover': { bgcolor: 'rgba(46, 125, 50, 0.08)' } }}
+                    >
+                      <ListItemIcon sx={{ color: '#2E7D32' }}><LocalShipping /></ListItemIcon>
+                      <ListItemText primary="Orders" primaryTypographyProps={{ fontWeight: 500 }} />
+                    </ListItemButton>
+                  </ListItem>
+
+                  <ListItem disablePadding sx={{ mb: 1 }}>
+                    <ListItemButton 
+                      onClick={() => navigate('/cart')}
+                      sx={{ borderRadius: 2, '&:hover': { bgcolor: 'rgba(46, 125, 50, 0.08)' } }}
+                    >
+                      <ListItemIcon sx={{ color: '#2E7D32' }}>
+                        <Badge badgeContent={cartItemCount} color="error">
+                          <ShoppingCart />
+                        </Badge>
+                      </ListItemIcon>
+                      <ListItemText primary="Cart" primaryTypographyProps={{ fontWeight: 500 }} />
+                    </ListItemButton>
+                  </ListItem>
+
+                  {userInfo.isAdmin && (
+                    <ListItem disablePadding sx={{ mb: 1 }}>
+                      <ListItemButton 
+                        onClick={() => navigate('/admin/dashboard')}
+                        sx={{ borderRadius: 2, '&:hover': { bgcolor: 'rgba(46, 125, 50, 0.08)' } }}
+                      >
+                        <ListItemIcon sx={{ color: '#2E7D32' }}><AdminPanelSettings /></ListItemIcon>
+                        <ListItemText primary="Admin Panel" primaryTypographyProps={{ fontWeight: 600 }} />
+                      </ListItemButton>
+                    </ListItem>
+                  )}
+
+                  <Divider sx={{ my: 2 }} />
+
+                  <ListItem disablePadding>
+                    <ListItemButton 
+                      onClick={handleLogout}
+                      sx={{ borderRadius: 2, '&:hover': { bgcolor: 'rgba(211, 47, 47, 0.08)' } }}
+                    >
+                      <ListItemIcon sx={{ color: '#d32f2f' }}><Logout /></ListItemIcon>
+                      <ListItemText primary="Logout" primaryTypographyProps={{ fontWeight: 600, color: '#d32f2f' }} />
+                    </ListItemButton>
+                  </ListItem>
+                </>
+              ) : (
+                <>
+                  <Divider sx={{ my: 1.5 }} />
+
+                  <ListItem disablePadding sx={{ mb: 1 }}>
+                    <ListItemButton 
+                      onClick={() => navigate('/login')}
+                      sx={{ borderRadius: 2, '&:hover': { bgcolor: 'rgba(46, 125, 50, 0.08)' } }}
+                    >
+                      <ListItemIcon sx={{ color: '#2E7D32' }}><LoginIcon /></ListItemIcon>
+                      <ListItemText primary="Login" primaryTypographyProps={{ fontWeight: 600, color: '#2E7D32' }} />
+                    </ListItemButton>
+                  </ListItem>
+
+                  <ListItem disablePadding sx={{ mb: 1 }}>
+                    <ListItemButton 
+                      onClick={() => navigate('/register')}
+                      sx={{ borderRadius: 2, '&:hover': { bgcolor: 'rgba(46, 125, 50, 0.08)' } }}
+                    >
+                      <ListItemIcon sx={{ color: '#2E7D32' }}><RegisterIcon /></ListItemIcon>
+                      <ListItemText primary="Register" primaryTypographyProps={{ fontWeight: 600, color: '#2E7D32' }} />
+                    </ListItemButton>
+                  </ListItem>
+                </>
+              )}
+            </List>
+          </Box>
+        </Drawer>
       </Toolbar>
     </AppBar>
   );

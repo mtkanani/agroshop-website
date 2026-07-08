@@ -394,7 +394,7 @@ export default function Home() {
         ) : (
           <Grid container spacing={3}>
             {farmerStories.map((story, index) => (
-              <Grid item xs={12} md={4} key={story._id || index}>
+              <Grid item xs={12} sm={6} md={4} key={story._id || index}>
                 <Card
                   sx={{
                     height: '100%',

@@ -38,7 +38,7 @@ export default function Login() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', p: { xs: 2, sm: 4 } }}>
       <Card sx={{ maxWidth: 430, width: '100%', boxShadow: 3 }}>
         <CardHeader
           title={<Typography variant="h5" sx={{ fontWeight: 700, color: '#E7F1FE' }}>Login to Your Account</Typography>}

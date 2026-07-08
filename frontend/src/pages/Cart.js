@@ -56,66 +56,87 @@ export default function Cart() {
               Cart Items ({items.length})
             </Typography>
           {items.map(item => (
-              <Paper key={item.product} sx={{ p: 3, mb: 2, borderRadius: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  {/* Product Image */}
-                  <Box
-                    sx={{
-                      width: 80,
-                      height: 80,
-                      backgroundImage: item.image ? `url(${item.image})` : 'none',
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      borderRadius: 2,
-                      bgcolor: '#e0e0e0',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '0.8rem',
-                      color: '#666',
-                      flexShrink: 0
-                    }}
-                  >
-                    {!item.image && 'No Image'}
-                  </Box>
-                  
-                  {/* Product Details */}
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                      {item.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                      Price: ₹{item.price} per item
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <TextField
-                  type="number"
-                  size="small"
-                        label="Quantity"
-                  value={item.quantity}
-                  onChange={e => handleQuantity(item.product, e.target.value)}
-                        sx={{ width: 100 }}
-                  inputProps={{ min: 1 }}
-                />
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        Total: ₹{item.price * item.quantity}
+              <Paper key={item.product} sx={{ p: { xs: 2, sm: 3 }, mb: 2, borderRadius: 2, position: 'relative' }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: { xs: 'column', sm: 'row' }, 
+                  alignItems: { xs: 'flex-start', sm: 'center' }, 
+                  gap: 2 
+                }}>
+                  {/* Product Image and Details Row */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', flex: 1 }}>
+                    <Box
+                      sx={{
+                        width: { xs: 70, sm: 80 },
+                        height: { xs: 70, sm: 80 },
+                        backgroundImage: item.image ? `url(${item.image})` : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        borderRadius: 2,
+                        bgcolor: '#e0e0e0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.8rem',
+                        color: '#666',
+                        flexShrink: 0
+                      }}
+                    >
+                      {!item.image && 'No Image'}
+                    </Box>
+                    
+                    {/* Product Details */}
+                    <Box sx={{ flex: 1, pr: { xs: 5, sm: 0 } }}>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 0.5, fontSize: { xs: '1.05rem', sm: '1.25rem' } }}>
+                        {item.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Price: ₹{item.price} per item
                       </Typography>
                     </Box>
-              </Box>
+                  </Box>
+                  
+                  {/* Quantity and Price Row */}
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between', 
+                    width: { xs: '100%', sm: 'auto' }, 
+                    gap: 3,
+                    mt: { xs: 1, sm: 0 },
+                    pt: { xs: 1, sm: 0 },
+                    borderTop: { xs: '1px solid #f0f0f0', sm: 'none' }
+                  }}>
+                    <TextField
+                      type="number"
+                      size="small"
+                      label="Quantity"
+                      value={item.quantity}
+                      onChange={e => handleQuantity(item.product, e.target.value)}
+                      sx={{ width: 90 }}
+                      inputProps={{ min: 1 }}
+                    />
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#2E7D32', minWidth: 100, textAlign: 'right' }}>
+                      Total: ₹{item.price * item.quantity}
+                    </Typography>
+                  </Box>
                   
                   {/* Remove Button */}
                   <IconButton 
                     onClick={() => handleRemove(item.product)} 
                     color="error"
                     sx={{ 
+                      position: { xs: 'absolute', sm: 'static' },
+                      top: { xs: 12, sm: 'auto' },
+                      right: { xs: 12, sm: 'auto' },
                       bgcolor: '#ffebee',
                       '&:hover': { bgcolor: '#ffcdd2' }
                     }}
                   >
-                <DeleteIcon />
-              </IconButton>
+                    <DeleteIcon />
+                  </IconButton>
                 </Box>
-            </Paper>
+              </Paper>
           ))}
           </Box>
 
