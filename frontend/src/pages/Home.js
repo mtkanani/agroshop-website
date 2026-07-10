@@ -83,7 +83,45 @@ export default function Home() {
       console.error('Error fetching success stories:', error);
       setError('Failed to load success stories. Using sample data instead.');
       // Fallback to sample data if API fails
-      
+      const fallbackStories = [
+        {
+          _id: 'fallback-1',
+          name: 'Rajesh Kumar',
+          location: 'Punjab',
+          crop: 'Wheat',
+          photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+          testimonial: "Using Agro Shop's quality seeds and fertilizers increased my wheat yield by 40% compared to last year. The expert advice helped me optimize my farming practices.",
+          yieldIncrease: 40,
+          profitIncrease: 250000,
+          timeSaved: 30,
+          productsUsed: ['Seeds', 'Fertilizers'],
+        },
+        {
+          _id: 'fallback-2',
+          name: 'Lakshmi Devi',
+          location: 'Karnataka',
+          crop: 'Paddy',
+          photo: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+          testimonial: "The organic fertilizers from Agro Shop transformed my paddy field. My crop quality improved significantly and I earned 35% more profit this season.",
+          yieldIncrease: 35,
+          profitIncrease: 180000,
+          timeSaved: 25,
+          productsUsed: ['Fertilizers', 'Pesticides'],
+        },
+        {
+          _id: 'fallback-3',
+          name: 'Amrit Singh',
+          location: 'Haryana',
+          crop: 'Cotton',
+          photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+          testimonial: "Professional sprayers and pesticides from Agro Shop helped me protect my cotton crop from pests. My yield increased by 50% with better quality.",
+          yieldIncrease: 50,
+          profitIncrease: 320000,
+          timeSaved: 40,
+          productsUsed: ['Sprayers', 'Pesticides'],
+        }
+      ];
+      setFarmerStories(fallbackStories);
     } finally {
       setLoading(false);
     }
@@ -138,10 +176,10 @@ export default function Home() {
             justifyContent: 'center',
           }}
         >
-          <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 2, color: 'white' }}>
+          <Typography sx={{ fontWeight: 'bold', mb: 2, color: 'white', fontSize: { xs: '2.1rem', sm: '2.8rem', md: '3.5rem' }, lineHeight: 1.2 }}>
             Welcome to Agro Shop
           </Typography>
-          <Typography variant="h6" sx={{ color: 'white', mb: 3 }}>
+          <Typography sx={{ color: 'white', mb: 3, fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}>
             Your one-stop destination for all agricultural products.
           </Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -300,14 +338,14 @@ export default function Home() {
                 {category.name}
               </Typography>
 
-              {/* Category Description (Hidden by default, shown on hover) */}
+              {/* Category Description (Always visible on mobile/tablet, hover on desktop) */}
               <Typography 
                 variant="body2" 
                 className="category-description"
                 sx={{ 
                   color: '#666',
-                  opacity: 0,
-                  transform: 'translateY(10px)',
+                  opacity: { xs: 1, md: 0 },
+                  transform: { xs: 'none', md: 'translateY(10px)' },
                   transition: 'all 0.3s ease',
                   lineHeight: 1.4,
                   px: 1
@@ -434,31 +472,31 @@ export default function Home() {
                       </Typography>
                       <Grid container spacing={1}>
                         <Grid item xs={4}>
-                          <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#E8F5E8', borderRadius: 1 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2E7D32' }}>
+                          <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 }, bgcolor: '#E8F5E8', borderRadius: 1 }}>
+                            <Typography sx={{ fontWeight: 'bold', color: '#2E7D32', fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.25rem' } }}>
                               {story.yieldIncrease}%
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography sx={{ color: 'text.secondary', fontSize: { xs: '0.65rem', sm: '0.75rem' }, display: 'block' }}>
                               Yield Increase
                             </Typography>
                           </Box>
                         </Grid>
                         <Grid item xs={4}>
-                          <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#E3F2FD', borderRadius: 1 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976D2' }}>
+                          <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 }, bgcolor: '#E3F2FD', borderRadius: 1 }}>
+                            <Typography sx={{ fontWeight: 'bold', color: '#1976D2', fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.25rem' } }}>
                               ₹{story.profitIncrease?.toLocaleString() || story.profitIncrease}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography sx={{ color: 'text.secondary', fontSize: { xs: '0.65rem', sm: '0.75rem' }, display: 'block' }}>
                               Profit Increase
                             </Typography>
                           </Box>
                         </Grid>
                         <Grid item xs={4}>
-                          <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#FFF3E0', borderRadius: 1 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#F57C00' }}>
+                          <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 }, bgcolor: '#FFF3E0', borderRadius: 1 }}>
+                            <Typography sx={{ fontWeight: 'bold', color: '#F57C00', fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.25rem' } }}>
                               {story.timeSaved}%
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography sx={{ color: 'text.secondary', fontSize: { xs: '0.65rem', sm: '0.75rem' }, display: 'block' }}>
                               Time Saved
                             </Typography>
                           </Box>

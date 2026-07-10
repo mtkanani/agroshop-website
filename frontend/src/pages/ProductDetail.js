@@ -249,7 +249,7 @@ export default function ProductDetail() {
             <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               {/* Product Title and Category */}
               <Box sx={{ mb: 3 }}>
-                <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#2E7D32', mb: 1 }}>
+                <Typography sx={{ fontWeight: 'bold', color: '#2E7D32', mb: 1, fontSize: { xs: '1.6rem', sm: '2.1rem', md: '2.5rem' }, lineHeight: 1.2 }}>
                   {productDetail.name}
                 </Typography>
                 <Chip
@@ -279,7 +279,7 @@ export default function ProductDetail() {
 
               {/* Price */}
               <Box sx={{ mb: 3 }}>
-                <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#2E7D32' }}>
+                <Typography sx={{ fontWeight: 'bold', color: '#2E7D32', fontSize: { xs: '1.8rem', sm: '2.4rem', md: '3rem' } }}>
                   ₹{productDetail.price?.toLocaleString() || 0}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -351,25 +351,25 @@ export default function ProductDetail() {
                 <Divider sx={{ mb: 2 }} />
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
-                    <Box sx={{ textAlign: 'center', p: 1 }}>
-                      <LocalShipping sx={{ fontSize: 40, color: '#2E7D32', mb: 1 }} />
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                    <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 } }}>
+                      <LocalShipping sx={{ fontSize: { xs: 30, sm: 40 }, color: '#2E7D32', mb: 1 }} />
+                      <Typography sx={{ fontWeight: 'bold', fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.85rem' } }}>
                         Free Delivery
                       </Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={4}>
-                    <Box sx={{ textAlign: 'center', p: 1 }}>
-                      <Security sx={{ fontSize: 40, color: '#2E7D32', mb: 1 }} />
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                    <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 } }}>
+                      <Security sx={{ fontSize: { xs: 30, sm: 40 }, color: '#2E7D32', mb: 1 }} />
+                      <Typography sx={{ fontWeight: 'bold', fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.85rem' } }}>
                         Secure Payment
                       </Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={4}>
-                    <Box sx={{ textAlign: 'center', p: 1 }}>
-                      <Star sx={{ fontSize: 40, color: '#2E7D32', mb: 1 }} />
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                    <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 } }}>
+                      <Star sx={{ fontSize: { xs: 30, sm: 40 }, color: '#2E7D32', mb: 1 }} />
+                      <Typography sx={{ fontWeight: 'bold', fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.85rem' } }}>
                         Quality Assured
                       </Typography>
                     </Box>

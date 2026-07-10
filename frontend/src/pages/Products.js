@@ -295,10 +295,19 @@ export default function Products() {
             top: 20,
             display: { xs: showFilters ? 'block' : 'none', md: 'block' }
           }}>
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold', color: '#2E7D32' }}>
-              <FilterList sx={{ mr: 1, verticalAlign: 'middle' }} />
-              Filters & Sort
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2E7D32', display: 'flex', alignItems: 'center' }}>
+                <FilterList sx={{ mr: 1 }} />
+                Filters & Sort
+              </Typography>
+              <IconButton 
+                onClick={() => setShowFilters(false)} 
+                sx={{ display: { xs: 'inline-flex', md: 'none' }, color: '#2E7D32' }}
+                aria-label="close filters"
+              >
+                <Clear />
+              </IconButton>
+            </Box>
 
             {/* Category Filter */}
             <Box sx={{ mb: 3 }}>

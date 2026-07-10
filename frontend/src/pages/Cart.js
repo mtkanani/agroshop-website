@@ -87,10 +87,10 @@ export default function Cart() {
                     
                     {/* Product Details */}
                     <Box sx={{ flex: 1, pr: { xs: 5, sm: 0 } }}>
-                      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 0.5, fontSize: { xs: '1.05rem', sm: '1.25rem' } }}>
+                      <Typography sx={{ fontWeight: 'bold', mb: 0.5, fontSize: { xs: '0.95rem', sm: '1.15rem', md: '1.25rem' }, color: '#2E7D32' }}>
                         {item.name}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography sx={{ fontSize: { xs: '0.75rem', sm: '0.85rem' }, color: 'text.secondary' }}>
                         Price: ₹{item.price} per item
                       </Typography>
                     </Box>
@@ -102,7 +102,7 @@ export default function Cart() {
                     alignItems: 'center', 
                     justifyContent: 'space-between', 
                     width: { xs: '100%', sm: 'auto' }, 
-                    gap: 3,
+                    gap: { xs: 1.5, sm: 3 },
                     mt: { xs: 1, sm: 0 },
                     pt: { xs: 1, sm: 0 },
                     borderTop: { xs: '1px solid #f0f0f0', sm: 'none' }
@@ -110,13 +110,13 @@ export default function Cart() {
                     <TextField
                       type="number"
                       size="small"
-                      label="Quantity"
+                      label="Qty"
                       value={item.quantity}
                       onChange={e => handleQuantity(item.product, e.target.value)}
-                      sx={{ width: 90 }}
+                      sx={{ width: { xs: 75, sm: 90 } }}
                       inputProps={{ min: 1 }}
                     />
-                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#2E7D32', minWidth: 100, textAlign: 'right' }}>
+                    <Typography sx={{ fontWeight: 'bold', color: '#2E7D32', minWidth: { xs: 80, sm: 100 }, fontSize: { xs: '0.9rem', sm: '1rem' }, textAlign: 'right' }}>
                       Total: ₹{item.price * item.quantity}
                     </Typography>
                   </Box>

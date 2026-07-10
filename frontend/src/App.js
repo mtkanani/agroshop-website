@@ -143,9 +143,9 @@ function AppNav() {
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar sx={{ px: { xs: 2, sm: 3 }, justifyContent: 'space-between' }}>
         <Typography 
-          variant="h6" 
           sx={{ 
             fontWeight: 'bold',
+            fontSize: { xs: '1.15rem', sm: '1.3rem', md: '1.4rem' },
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -490,7 +490,7 @@ function Footer() {
       <Container maxWidth="lg">
         <Grid container spacing={4} sx={{ py: 4 }}>
           {/* Company Info */}
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
               🌾 Agro Shop
             </Typography>
@@ -503,7 +503,7 @@ function Footer() {
           </Grid>
 
           {/* Quick Links */}
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
               Quick Links
             </Typography>
@@ -540,7 +540,7 @@ function Footer() {
           </Grid>
 
           {/* Share Your Story */}
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} sm={12} md={4}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
               Share Your Success Story
             </Typography>
