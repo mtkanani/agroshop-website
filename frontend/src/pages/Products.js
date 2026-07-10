@@ -456,26 +456,28 @@ export default function Products() {
                     overflow: 'hidden'
                   }}>
                     {/* Product Image */}
-                    <CardMedia
-                      component="img"
-                      height="200"
-                      image={product.images?.[0] || '/placeholder-image.jpg'}
-                      alt={product.name}
-                      sx={{
-                        objectFit: 'cover',
-                        position: 'relative',
-                        '&::before': {
-                          content: '""',
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          background: 'linear-gradient(45deg, rgba(46, 125, 50, 0.1), rgba(76, 175, 80, 0.1))',
-                          zIndex: 1,
-                        }
-                      }}
-                    />
+                    <Link to={`/product/${product._id}`} style={{ textDecoration: 'none', display: 'block' }}>
+                      <CardMedia
+                        component="img"
+                        height="200"
+                        image={product.images?.[0] || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb19675?w=500&auto=format&fit=crop&q=60'}
+                        alt={product.name}
+                        sx={{
+                          objectFit: 'cover',
+                          position: 'relative',
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'linear-gradient(45deg, rgba(46, 125, 50, 0.1), rgba(76, 175, 80, 0.1))',
+                            zIndex: 1,
+                          }
+                        }}
+                      />
+                    </Link>
 
                     {/* Category Badge */}
                     {product.category?.name && (
@@ -515,17 +517,23 @@ export default function Products() {
 
                     <CardContent sx={{ flexGrow: 1, p: 3 }}>
                       {/* Product Name */}
-                      <Typography 
-                        variant="h6" 
-                        sx={{ 
-                          fontWeight: 'bold', 
-                          mb: 1,
-                          color: '#2E7D32',
-                          lineHeight: 1.3
-                        }}
-                      >
-                        {product.name}
-                      </Typography>
+                      <Link to={`/product/${product._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <Typography 
+                          variant="h6" 
+                          sx={{ 
+                            fontWeight: 'bold', 
+                            mb: 1,
+                            color: '#2E7D32',
+                            lineHeight: 1.3,
+                            '&:hover': {
+                              color: '#1B5E20',
+                              textDecoration: 'underline'
+                            }
+                          }}
+                        >
+                          {product.name}
+                        </Typography>
+                      </Link>
 
                       {/* Product Description */}
                       <Typography 
