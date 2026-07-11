@@ -63,6 +63,39 @@ export default function Products() {
   const [addingToCart, setAddingToCart] = useState({});
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [showFilters, setShowFilters] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
+
+  useEffect(() => {
+    try {
+      const list = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      setWishlist(list);
+    } catch (err) {
+      setWishlist([]);
+    }
+  }, []);
+
+  const isInWishlist = (id) => wishlist.some(p => p._id === id);
+
+  const handleToggleWishlist = (product) => {
+    let updatedList = [...wishlist];
+    const isFav = isInWishlist(product._id);
+    if (isFav) {
+      updatedList = updatedList.filter(p => p._id !== product._id);
+      setSnackbar({ open: true, message: `Removed ${product.name} from wishlist`, severity: 'info' });
+    } else {
+      updatedList.push({
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        rating: product.rating,
+        image: product.images?.[0] || product['images[0]'] || ''
+      });
+      setSnackbar({ open: true, message: `Added ${product.name} to wishlist!`, severity: 'success' });
+    }
+    localStorage.setItem('wishlist', JSON.stringify(updatedList));
+    setWishlist(updatedList);
+    window.dispatchEvent(new Event('wishlist-update'));
+  };
 
   // Get category from URL parameters
   const categoryFromUrl = searchParams.get('category');
@@ -438,9 +471,9 @@ export default function Products() {
               </Button>
             </Paper>
           ) : (
-            <Grid container spacing={3}>
+            <Grid container spacing={{ xs: 1.5, sm: 3 }}>
               {filteredProducts.map((product) => (
-                <Grid item xs={12} sm={6} lg={4} key={product._id}>
+                <Grid item xs={6} sm={6} lg={4} key={product._id}>
                   <Card sx={{
                     height: '100%',
                     display: 'flex',
@@ -464,6 +497,7 @@ export default function Products() {
                         alt={product.name}
                         sx={{
                           objectFit: 'cover',
+                          height: { xs: 140, sm: 200 },
                           position: 'relative',
                           '&::before': {
                             content: '""',
@@ -479,6 +513,27 @@ export default function Products() {
                       />
                     </Link>
 
+                    {/* Wishlist Toggle Heart Button */}
+                    <IconButton
+                      onClick={() => handleToggleWishlist(product)}
+                      sx={{
+                        position: 'absolute',
+                        top: 12,
+                        left: 12,
+                        bgcolor: 'rgba(255, 255, 255, 0.9)',
+                        color: isInWishlist(product._id) ? '#d32f2f' : '#757575',
+                        '&:hover': { bgcolor: 'rgba(255, 255, 255, 1)', color: '#d32f2f' },
+                        zIndex: 2,
+                        p: { xs: 0.5, sm: 1 }
+                      }}
+                    >
+                      {isInWishlist(product._id) ? (
+                        <Favorite sx={{ fontSize: { xs: 16, sm: 20 } }} />
+                      ) : (
+                        <FavoriteBorder sx={{ fontSize: { xs: 16, sm: 20 } }} />
+                      )}
+                    </IconButton>
+
                     {/* Category Badge */}
                     {product.category?.name && (
                       <Chip
@@ -486,12 +541,13 @@ export default function Products() {
                         size="small"
                         sx={{
                           position: 'absolute',
-                          top: 12,
+                          top: 60,
                           left: 12,
                           bgcolor: 'rgba(46, 125, 50, 0.9)',
                           color: 'white',
                           fontWeight: 'bold',
-                          zIndex: 2
+                          zIndex: 2,
+                          display: { xs: 'none', sm: 'inline-flex' }
                         }}
                       />
                     )}
@@ -507,15 +563,16 @@ export default function Products() {
                       py: 0.5,
                       display: 'flex',
                       alignItems: 'center',
-                      zIndex: 2
+                      zIndex: 2,
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' }
                     }}>
-                      <Star sx={{ fontSize: 16, color: '#FFD700', mr: 0.5 }} />
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                      <Star sx={{ fontSize: { xs: 13, sm: 16 }, color: '#FFD700', mr: 0.5 }} />
+                      <Typography variant="body2" sx={{ fontWeight: 'bold', fontSize: 'inherit' }}>
                         {product.rating?.toFixed(1) || '0.0'}
                       </Typography>
                     </Box>
 
-                    <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                    <CardContent sx={{ flexGrow: 1, p: { xs: 1.5, sm: 3 } }}>
                       {/* Product Name */}
                       <Link to={`/product/${product._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                         <Typography 
@@ -525,6 +582,12 @@ export default function Products() {
                             mb: 1,
                             color: '#2E7D32',
                             lineHeight: 1.3,
+                            fontSize: { xs: '0.85rem', sm: '1.15rem' },
+                            minHeight: { xs: 44, sm: 'auto' },
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
                             '&:hover': {
                               color: '#1B5E20',
                               textDecoration: 'underline'
@@ -542,7 +605,7 @@ export default function Products() {
                         sx={{ 
                           mb: 2,
                           lineHeight: 1.5,
-                          display: '-webkit-box',
+                          display: { xs: 'none', sm: '-webkit-box' },
                           WebkitLineClamp: 2,
                           WebkitBoxOrient: 'vertical',
                           overflow: 'hidden'
@@ -557,28 +620,29 @@ export default function Products() {
                         sx={{ 
                           fontWeight: 'bold', 
                           color: '#2E7D32',
-                          mb: 2
+                          mb: { xs: 1, sm: 2 },
+                          fontSize: { xs: '1.1rem', sm: '1.5rem' }
                         }}
                       >
                         ₹{product.price?.toLocaleString() || 0}
                       </Typography>
 
                       {/* Rating */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 0, sm: 2 } }}>
                         <Rating
                           value={Number(product.rating) || 0}
                           precision={0.1}
                           readOnly
                           size="small"
-                          sx={{ mr: 1 }}
+                          sx={{ mr: 1, fontSize: { xs: '0.75rem', sm: '1rem' } }}
                         />
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.secondary" sx={{ display: { xs: 'none', sm: 'inline' } }}>
                           ({product.rating || 0})
                         </Typography>
                       </Box>
                     </CardContent>
 
-                    <CardActions sx={{ p: 3, pt: 0 }}>
+                    <CardActions sx={{ p: { xs: 1.5, sm: 3 }, pt: 0 }}>
                       <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
                         <Button
                           variant="outlined"
@@ -588,21 +652,27 @@ export default function Products() {
                             flex: 1,
                             borderColor: '#2E7D32',
                             color: '#2E7D32',
+                            fontSize: { xs: '0.7rem', sm: '0.85rem' },
+                            py: { xs: 0.5, sm: 1 },
+                            px: { xs: 0.5, sm: 1.5 },
+                            whiteSpace: 'nowrap',
                             '&:hover': {
                               borderColor: '#1B5E20',
                               bgcolor: '#f1f8e9'
                             }
                           }}
                         >
-                          View Details
+                          Details
                         </Button>
                         <Tooltip title="Add to Cart">
                           <IconButton
                             onClick={() => handleAddToCart(product)}
                             disabled={addingToCart[product._id]}
+                            size="small"
                             sx={{
                               bgcolor: '#2E7D32',
                               color: 'white',
+                              p: { xs: 0.5, sm: 1 },
                               '&:hover': {
                                 bgcolor: '#1B5E20'
                               },
@@ -615,7 +685,7 @@ export default function Products() {
                               <CircularProgress size={20} color="inherit" />
                             ) : (
                               <Badge badgeContent={getCartItemQuantity(product._id)} color="error">
-                                <ShoppingCart />
+                                <ShoppingCart sx={{ fontSize: { xs: 16, sm: 20 } }} />
                               </Badge>
                             )}
                           </IconButton>

@@ -47,7 +47,8 @@ import {
   Security,
   Add as AddIcon,
   Close as CloseIcon,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  FavoriteBorder
 } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { submitSuccessStory } from './api/successStoryApi';
@@ -69,6 +70,7 @@ import AdminProducts from './pages/AdminProducts';
 import OrderSuccess from './pages/OrderSuccess';
 import AdminOrders from './pages/AdminOrders';
 import Contact from './pages/Contact';
+import Wishlist from './pages/Wishlist';
 import { logout } from './features/userSlice';
 
 // Create agriculture green theme
@@ -130,6 +132,27 @@ function AppNav() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [wishlistCount, setWishlistCount] = useState(0);
+
+  useEffect(() => {
+    const updateWishlistCount = () => {
+      try {
+        const list = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        setWishlistCount(list.length);
+      } catch (err) {
+        setWishlistCount(0);
+      }
+    };
+    
+    updateWishlistCount();
+    window.addEventListener('storage', updateWishlistCount);
+    window.addEventListener('wishlist-update', updateWishlistCount);
+    
+    return () => {
+      window.removeEventListener('storage', updateWishlistCount);
+      window.removeEventListener('wishlist-update', updateWishlistCount);
+    };
+  }, []);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -191,15 +214,6 @@ function AppNav() {
               >
                 Orders
               </Button>
-              <Button 
-                color="inherit" 
-                onClick={() => navigate('/cart')}
-              >
-                Cart
-                {cartItemCount > 0 && (
-                  <Badge badgeContent={cartItemCount} color="error" sx={{ ml: 1 }} />
-                )}
-              </Button>
               {userInfo.isAdmin && (
                 <Button 
                   color="inherit" 
@@ -213,7 +227,26 @@ function AppNav() {
         </Box>
 
         {/* Desktop Right Side Logout / Auth Actions */}
-        <Box sx={{ display: { xs: 'none', md: 'flex' }, width: 240, justifyContent: 'flex-end', gap: 1 }}>
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, width: 240, justifyContent: 'flex-end', alignItems: 'center', gap: 1.5 }}>
+          <IconButton 
+            color="inherit" 
+            onClick={() => navigate('/wishlist')}
+            sx={{ '&:hover': { color: '#e57373' } }}
+          >
+            <Badge badgeContent={wishlistCount} color="error">
+              <FavoriteBorder />
+            </Badge>
+          </IconButton>
+          
+          <IconButton 
+            color="inherit" 
+            onClick={() => navigate('/cart')}
+            sx={{ '&:hover': { color: '#81c784' } }}
+          >
+            <Badge badgeContent={cartItemCount} color="error">
+              <ShoppingCart />
+            </Badge>
+          </IconButton>
           {userInfo ? (
             <Button 
               color="inherit" 
@@ -804,6 +837,7 @@ function App() {
               <Route path="/admin/products" element={<AdminProducts />} />
               <Route path="/admin/orders" element={<AdminOrders />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/wishlist" element={<Wishlist />} />
             </Routes>
           </Box>
           <Footer />
