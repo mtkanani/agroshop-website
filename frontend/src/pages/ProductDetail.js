@@ -131,28 +131,30 @@ export default function ProductDetail() {
   const hasMultipleImages = images.length > 1;
 
   return (
-    <Container maxWidth="lg" sx={{ py: 5, bgcolor: '#FAFDF6' }}>
-      {/* Back Button */}
-      <Button 
-        variant="outlined" 
-        startIcon={<ArrowBack />}
-        onClick={() => navigate('/products')}
-        sx={{ 
-          mb: 4, 
-          borderColor: '#2E7D32', 
-          color: '#2E7D32', 
-          borderRadius: 3,
-          px: 3,
-          py: 1,
-          fontWeight: 'bold',
-          '&:hover': { 
-            borderColor: '#1B5E20',
-            bgcolor: 'rgba(46,125,50,0.05)',
-            transform: 'translateX(-4px)'
-          },
-          transition: 'all 0.3s'
-        }}
-      >
+    <Box sx={{ bgcolor: '#FAFDF6', minHeight: '85vh', py: 4 }}>
+      <Container maxWidth="xl">
+        {/* Back Button */}
+        <Button 
+          variant="outlined" 
+          startIcon={<ArrowBack />}
+          onClick={() => navigate('/products')}
+          sx={{ 
+            mb: 4, 
+            borderColor: '#2E7D32', 
+            color: '#2E7D32', 
+            borderRadius: 3,
+            px: 3,
+            py: 1,
+            fontWeight: 'bold',
+            bgcolor: 'white',
+            '&:hover': { 
+              borderColor: '#1B5E20',
+              bgcolor: 'rgba(46,125,50,0.05)',
+              transform: 'translateX(-4px)'
+            },
+            transition: 'all 0.3s'
+          }}
+        >
         Back to Products
       </Button>
 
@@ -490,6 +492,7 @@ export default function ProductDetail() {
           {productDetail.name} added to cart successfully!
         </Alert>
       </Snackbar>
-    </Container>
+      </Container>
+    </Box>
   );
 } 
