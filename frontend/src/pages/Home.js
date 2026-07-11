@@ -1,6 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, Grid, Paper, Button, Stack, Card, CardContent, Avatar, Chip, CircularProgress } from '@mui/material';
+import { 
+  Box, 
+  Typography, 
+  Grid, 
+  Paper, 
+  Button, 
+  Stack, 
+  Card, 
+  CardContent, 
+  Avatar, 
+  Chip, 
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Divider
+} from '@mui/material';
 import { getApprovedStories } from '../api/successStoryApi';
 import farmBg from '../assets/farm.jpg';
 
@@ -9,7 +26,7 @@ const categories = [
     name: 'Seeds',
     icon: '🌱',
     description: 'Quality seeds for better yield and crop production',
-    color: '#4CAF50',
+    color: '#2E7D32',
     animation: 'sprout'
   },
   {
@@ -62,11 +79,98 @@ const weatherTips = [
   }
 ];
 
+const stats = [
+  { value: '50,000+', label: 'Happy Farmers', icon: '👨‍🌾', color: '#2E7D32' },
+  { value: '150+', label: 'Quality Products', icon: '🌾', color: '#8BC34A' },
+  { value: '98%', label: 'Success Rate', icon: '📈', color: '#FF9800' },
+  { value: '24/7', label: 'Expert Support', icon: '🤝', color: '#2196F3' }
+];
+
+const soilTypes = [
+  'Loamy (Fertile & Rich)',
+  'Sandy (Dry & Well-drained)',
+  'Clayey (Moist & Heavy)',
+  'Black Soil (Cotton-friendly)'
+];
+
+const seasons = [
+  'Monsoon (Kharif)',
+  'Winter (Rabi)',
+  'Summer (Zaid)'
+];
+
+const matchingTips = {
+  'Loamy (Fertile & Rich)-Monsoon (Kharif)': {
+    crop: 'Paddy, Maize & Jowar',
+    advice: 'Perfect for nutrient-heavy crops. Focus on proper weed control and moisture monitoring.',
+    category: 'Seeds'
+  },
+  'Loamy (Fertile & Rich)-Winter (Rabi)': {
+    crop: 'Wheat, Barley & Mustard',
+    advice: 'Apply balanced fertilizers early. Excellent for high-yield grains.',
+    category: 'Seeds'
+  },
+  'Loamy (Fertile & Rich)-Summer (Zaid)': {
+    crop: 'Watermelon, Cucumber & Pulses',
+    advice: 'Maintains decent moisture. Keep drip irrigation active to maximize crop sweetness.',
+    category: 'Sprayers'
+  },
+  'Sandy (Dry & Well-drained)-Monsoon (Kharif)': {
+    crop: 'Bajra, Groundnut & Guar',
+    advice: 'Drains quickly. Add organic manure/fertilizer to help retain nutrients during rain.',
+    category: 'Fertilizers'
+  },
+  'Sandy (Dry & Well-drained)-Winter (Rabi)': {
+    crop: 'Gram & Coriander',
+    advice: 'Low water requirement crops are ideal. Apply light sprinkler watering regularly.',
+    category: 'Sprayers'
+  },
+  'Sandy (Dry & Well-drained)-Summer (Zaid)': {
+    crop: 'Muskmelon & Fodder Crops',
+    advice: 'Needs high temperature but steady moisture. Focus on root health and pesticide protection.',
+    category: 'Pesticides'
+  },
+  'Clayey (Moist & Heavy)-Monsoon (Kharif)': {
+    crop: 'Rice (Paddy) & Soyabean',
+    advice: 'High moisture retention. Maintain good drainage channels to prevent root rot.',
+    category: 'Pesticides'
+  },
+  'Clayey (Moist & Heavy)-Winter (Rabi)': {
+    crop: 'Linseed & Peas',
+    advice: 'Excellent for crops that need slow, steady moisture. Do not overwater.',
+    category: 'Fertilizers'
+  },
+  'Clayey (Moist & Heavy)-Summer (Zaid)': {
+    crop: 'Vegetables & Green Manure',
+    advice: 'Soil might crack in heat. Mulching and sprinkler watering are highly recommended.',
+    category: 'Sprayers'
+  },
+  'Black Soil (Cotton-friendly)-Monsoon (Kharif)': {
+    crop: 'Cotton & Sugarcane',
+    advice: 'Highly fertile. Cotton responds exceptionally well to timely fertilizer schedules.',
+    category: 'Seeds'
+  },
+  'Black Soil (Cotton-friendly)-Winter (Rabi)': {
+    crop: 'Wheat & Safflower',
+    advice: 'Retains moisture well. Minimal winter watering required.',
+    category: 'Fertilizers'
+  },
+  'Black Soil (Cotton-friendly)-Summer (Zaid)': {
+    crop: 'Sunflowers & Millets',
+    advice: 'Protective pesticide spraying is critical due to active pests in warm weather.',
+    category: 'Pesticides'
+  }
+};
+
 export default function Home() {
   const navigate = useNavigate();
   const [farmerStories, setFarmerStories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Interactive Matcher State
+  const [selectedSoil, setSelectedSoil] = useState('Loamy (Fertile & Rich)');
+  const [selectedSeason, setSelectedSeason] = useState('Monsoon (Kharif)');
 
   useEffect(() => {
     fetchSuccessStories();
@@ -77,12 +181,10 @@ export default function Home() {
       setLoading(true);
       setError(null);
       const response = await getApprovedStories();
-      console.log('Success stories response:', response);
       setFarmerStories(response.data || []);
     } catch (error) {
       console.error('Error fetching success stories:', error);
       setError('Failed to load success stories. Using sample data instead.');
-      // Fallback to sample data if API fails
       const fallbackStories = [
         {
           _id: 'fallback-1',
@@ -131,25 +233,32 @@ export default function Home() {
     navigate(`/products?category=${category.toLowerCase()}`);
   };
 
+  const currentMatcherResult = matchingTips[`${selectedSoil}-${selectedSeason}`] || {
+    crop: 'Millets & Pulses',
+    advice: 'A versatile crop option that works well in most local conditions.',
+    category: 'Seeds'
+  };
+
   return (
-    <Box sx={{ border: '5px', p: 2 }}>
-      {/* Welcome Section with Local Agriculture Background Image */}
+    <Box sx={{ p: { xs: 1, md: 3 }, bgcolor: '#FAFDF6' }}>
+      {/* Immersive Creative Hero Section */}
       <Box
         sx={{
           backgroundImage: `url(${farmBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          minHeight: '300px',
+          minHeight: { xs: '450px', md: '550px' },
           display: 'flex',
           alignItems: 'center',
           position: 'relative',
-          mb: 4,
-          borderRadius: 3,
+          mb: 5,
+          borderRadius: 6,
+          boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
           overflow: 'hidden',
         }}
       >
-        {/* Overlay for readability */}
+        {/* Modern dark green overlay */}
         <Box
           sx={{
             position: 'absolute',
@@ -157,55 +266,114 @@ export default function Home() {
             left: 0,
             width: '100%',
             height: '100%',
-            bgcolor: 'rgba(44, 167, 80, 0.45)',
+            background: 'linear-gradient(135deg, rgba(27, 94, 32, 0.8) 0%, rgba(46, 125, 50, 0.4) 100%)',
             zIndex: 1,
           }}
         />
+
+        {/* Floating Decorative Leaf elements */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '10%',
+            right: '15%',
+            fontSize: '3rem',
+            opacity: 0.15,
+            zIndex: 1,
+            animation: 'float 6s ease-in-out infinite',
+            '@keyframes float': {
+              '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+              '50%': { transform: 'translateY(-15px) rotate(5deg)' }
+            }
+          }}
+        >
+          🌿
+        </Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '15%',
+            right: '8%',
+            fontSize: '4rem',
+            opacity: 0.12,
+            zIndex: 1,
+            animation: 'float 8s ease-in-out infinite alternate',
+          }}
+        >
+          🌱
+        </Box>
+
+        {/* Glassmorphic content card */}
         <Box
           sx={{
             position: 'relative',
             zIndex: 2,
             textAlign: 'left',
             color: 'white',
-            width: { xs: '100%', md: '60%' },
-            pl: { xs: 3, md: 8 },
-            pr: { xs: 3, md: 0 },
-            py: 6,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
+            width: { xs: '90%', md: '55%' },
+            ml: { xs: 2, md: 8 },
+            p: { xs: 3, md: 5 },
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            webkitBackdropFilter: 'blur(10px)',
+            borderRadius: 5,
+            border: '1px solid rgba(255,255,255,0.2)',
+            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2)',
           }}
         >
-          <Typography sx={{ fontWeight: 'bold', mb: 2, color: 'white', fontSize: { xs: '2.1rem', sm: '2.8rem', md: '3.5rem' }, lineHeight: 1.2 }}>
-            Welcome to Agro Shop
+          <Chip
+            label="🌾 100% Certified Organic & Quality Products"
+            sx={{
+              bgcolor: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              fontWeight: 'bold',
+              mb: 3,
+              border: '1px solid rgba(255,255,255,0.3)',
+              px: 1,
+            }}
+          />
+          <Typography sx={{ 
+            fontWeight: 800, 
+            mb: 2, 
+            color: 'white', 
+            fontSize: { xs: '2.2rem', sm: '3rem', md: '3.8rem' }, 
+            lineHeight: 1.15,
+            textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+          }}>
+            Cultivating Success For Every Farmer
           </Typography>
-          <Typography sx={{ color: 'white', mb: 3, fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}>
-            Your one-stop destination for all agricultural products.
+          <Typography sx={{ 
+            color: 'rgba(255,255,255,0.9)', 
+            mb: 4, 
+            fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' },
+            lineHeight: 1.6
+          }}>
+            Empowering agricultural journeys with elite seeds, premium fertilizers, eco-friendly pesticides, and expert smart advisor tools.
           </Typography>
+          
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <Button
               variant="contained"
               size="large"
               sx={{
-                bgcolor: 'white',
-                color: '#2E7D32',
-                fontWeight: 600,
+                bgcolor: '#4CAF50',
+                color: 'white',
+                fontWeight: 700,
                 px: 4,
-                py: 1.5,
+                py: 1.8,
                 borderRadius: 3,
-                fontSize: '1.1rem',
-                boxShadow: 2,
+                fontSize: '1.05rem',
+                boxShadow: '0 4px 14px rgba(76, 175, 80, 0.4)',
                 '&:hover': {
-                  bgcolor: '#f5f5f5',
-                  color: '#388E3C',
+                  bgcolor: '#388E3C',
                   transform: 'translateY(-2px)',
-                  boxShadow: 4,
+                  boxShadow: '0 6px 20px rgba(76, 175, 80, 0.6)',
                 },
                 transition: 'all 0.3s ease',
               }}
               onClick={() => navigate('/products')}
             >
-              Shop Now
+              Explore Products
             </Button>
             <Button
               variant="outlined"
@@ -213,220 +381,359 @@ export default function Home() {
               sx={{
                 borderColor: 'white',
                 color: 'white',
-                fontWeight: 600,
+                fontWeight: 700,
                 px: 4,
-                py: 1.5,
+                py: 1.8,
                 borderRadius: 3,
-                fontSize: '1.1rem',
+                fontSize: '1.05rem',
+                borderWidth: '2px',
                 '&:hover': {
-                  bgcolor: 'rgba(255,255,255,0.1)',
+                  bgcolor: 'rgba(255,255,255,0.15)',
                   borderColor: 'white',
-                  color: '#fff',
+                  borderWidth: '2px',
                   transform: 'translateY(-2px)',
-                  boxShadow: 4,
                 },
                 transition: 'all 0.3s ease',
               }}
-              onClick={() => navigate('/products')}
+              onClick={() => {
+                const element = document.getElementById('matcher-tool');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
             >
-              Learn More
+              Smart Advisor
             </Button>
           </Stack>
         </Box>
       </Box>
 
-      {/* Featured Categories with Visual Cards */}
-      <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold', color: '#2E7D32' }}>
-        Featured Categories
-      </Typography>
-      <Grid container spacing={3} mb={4}>
-        {categories.map((category) => (
-          <Grid item xs={12} sm={6} md={3} key={category.name}>
-            <Paper
-              sx={{
-                p: 3,
-                textAlign: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                position: 'relative',
-                overflow: 'hidden',
-                background: `linear-gradient(135deg, ${category.color}15, ${category.color}05)`,
-                border: `2px solid ${category.color}30`,
-                borderRadius: 4,
-                minHeight: 200,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                '&:hover': {
-                  transform: 'translateY(-8px) scale(1.02)',
-                  boxShadow: `0 20px 40px ${category.color}40`,
-                  borderColor: category.color,
-                  '& .category-icon': {
-                    transform: 'scale(1.2) rotate(5deg)',
-                    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
-                  },
-                  '& .category-description': {
-                    opacity: 1,
-                    transform: 'translateY(0)',
-                  },
-                  '& .category-name': {
-                    color: category.color,
-                  }
-                },
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: `radial-gradient(circle at 30% 30%, ${category.color}20, transparent)`,
-                  opacity: 0,
-                  transition: 'opacity 0.3s ease',
-                },
-                '&:hover::before': {
-                  opacity: 1,
-                }
-              }}
-              onClick={() => handleCategoryClick(category.name)}
-            >
-              {/* Category Icon with Animation */}
-              <Box
-                className="category-icon"
-                sx={{
-                  fontSize: '4rem',
-                  mb: 2,
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
-                  animation: category.animation === 'sprout' ? 'sprout 2s ease-in-out infinite' :
-                             category.animation === 'droplet' ? 'droplet 2s ease-in-out infinite' :
-                             category.animation === 'shield' ? 'shield 2s ease-in-out infinite' :
-                             'soil 2s ease-in-out infinite',
-                  '@keyframes sprout': {
-                    '0%, 100%': { transform: 'scale(1) rotate(0deg)' },
-                    '50%': { transform: 'scale(1.1) rotate(5deg)' }
-                  },
-                  '@keyframes droplet': {
-                    '0%, 100%': { transform: 'translateY(0) scale(1)' },
-                    '50%': { transform: 'translateY(-5px) scale(1.1)' }
-                  },
-                  '@keyframes shield': {
-                    '0%, 100%': { transform: 'scale(1) rotate(0deg)' },
-                    '50%': { transform: 'scale(1.05) rotate(-2deg)' }
-                  },
-                  '@keyframes soil': {
-                    '0%, 100%': { transform: 'scale(1) translateY(0)' },
-                    '50%': { transform: 'scale(1.08) translateY(-3px)' }
-                  }
-                }}
-              >
-                {category.icon}
-              </Box>
-
-              {/* Category Name */}
-              <Typography 
-                variant="h6" 
-                className="category-name"
-                sx={{ 
-                  fontWeight: 'bold', 
-                  color: '#2E7D32',
-                  mb: 1,
-                  transition: 'color 0.3s ease',
-                  fontSize: '1.3rem'
-                }}
-              >
-                {category.name}
-              </Typography>
-
-              {/* Category Description (Always visible on mobile/tablet, hover on desktop) */}
-              <Typography 
-                variant="body2" 
-                className="category-description"
-                sx={{ 
-                  color: '#666',
-                  opacity: { xs: 1, md: 0 },
-                  transform: { xs: 'none', md: 'translateY(10px)' },
-                  transition: 'all 0.3s ease',
-                  lineHeight: 1.4,
-                  px: 1
-                }}
-              >
-                {category.description}
-              </Typography>
-
-              {/* Click Indicator */}
-              <Typography 
-                variant="caption" 
-                sx={{ 
-                  color: category.color,
-                  fontWeight: 600,
-                  mt: 1,
-                  opacity: 0.7,
-                  fontSize: '0.8rem'
-                }}
-              >
-                Click to explore
-              </Typography>
-      </Paper>
+      {/* Trust & Stats Section */}
+      <Box sx={{ mb: 6, px: { xs: 1, md: 3 } }}>
+        <Paper sx={{ 
+          p: 4, 
+          borderRadius: 4, 
+          boxShadow: '0 10px 30px rgba(46,125,50,0.05)',
+          border: '1px solid rgba(46,125,50,0.1)',
+          background: 'linear-gradient(90deg, #FFFFFF 0%, #F5FBF5 100%)'
+        }}>
+          <Grid container spacing={3}>
+            {stats.map((stat, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 2, 
+                  justifyContent: { xs: 'flex-start', md: 'center' },
+                  px: 2
+                }}>
+                  <Box sx={{ 
+                    fontSize: '2.5rem', 
+                    p: 1.5, 
+                    borderRadius: '50%', 
+                    bgcolor: `${stat.color}15`, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                  }}>
+                    {stat.icon}
+                  </Box>
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: '800', color: stat.color, lineHeight: 1.1 }}>
+                      {stat.value}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                      {stat.label}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+        </Paper>
+      </Box>
 
-      {/* Weather-based Recommendations */}
-      <Box sx={{ mb: 6 }}>
-        <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold', color: '#2E7D32' }}>
-          🌤️ Weather-based Recommendations
+      {/* Featured Categories with Premium Glow */}
+      <Box sx={{ mb: 6, px: { xs: 1, md: 3 } }}>
+        <Typography variant="h4" sx={{ mb: 1, fontWeight: 'bold', color: '#1B5E20' }}>
+          Explore Categories
         </Typography>
-        <Grid container spacing={3} mb={4}>
+        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
+          Carefully formulated products matching your specific agricultural needs
+        </Typography>
+        
+        <Grid container spacing={3}>
+          {categories.map((category) => (
+            <Grid item xs={12} sm={6} md={3} key={category.name}>
+              <Paper
+                sx={{
+                  p: 4,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  background: 'linear-gradient(135deg, #FFFFFF 0%, #F9FFF9 100%)',
+                  border: `2px solid ${category.color}20`,
+                  borderRadius: 5,
+                  minHeight: 220,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+                  '&:hover': {
+                    transform: 'translateY(-10px)',
+                    boxShadow: `0 15px 30px ${category.color}25`,
+                    borderColor: category.color,
+                    '& .category-icon': {
+                      transform: 'scale(1.2) rotate(6deg)',
+                    },
+                    '& .category-name': {
+                      color: category.color,
+                    }
+                  }
+                }}
+                onClick={() => handleCategoryClick(category.name)}
+              >
+                {/* Category Icon */}
+                <Box
+                  className="category-icon"
+                  sx={{
+                    fontSize: '3.5rem',
+                    mb: 2,
+                    p: 2,
+                    borderRadius: '50%',
+                    bgcolor: `${category.color}10`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  }}
+                >
+                  {category.icon}
+                </Box>
+
+                {/* Category Name */}
+                <Typography 
+                  variant="h6" 
+                  className="category-name"
+                  sx={{ 
+                    fontWeight: 'bold', 
+                    color: '#2E7D32',
+                    mb: 1.5,
+                    transition: 'color 0.3s ease',
+                    fontSize: '1.25rem'
+                  }}
+                >
+                  {category.name}
+                </Typography>
+
+                {/* Category Description */}
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: '#666',
+                    lineHeight: 1.5,
+                    px: 1
+                  }}
+                >
+                  {category.description}
+                </Typography>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      {/* Smart Soil & Crop Matcher Tool */}
+      <Box id="matcher-tool" sx={{ mb: 7, px: { xs: 1, md: 3 } }}>
+        <Grid container spacing={4} alignItems="center">
+          <Grid item xs={12} md={5}>
+            <Box sx={{ pr: { md: 4 } }}>
+              <Chip
+                label="💡 SMART FARM ADVISOR"
+                sx={{
+                  bgcolor: '#E8F5E8',
+                  color: '#2E7D32',
+                  fontWeight: 'bold',
+                  mb: 2,
+                }}
+              />
+              <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#1B5E20', mb: 2, lineHeight: 1.2 }}>
+                Find The Best Match For Your Soil
+              </Typography>
+              <Typography color="text.secondary" sx={{ mb: 3, lineHeight: 1.7 }}>
+                Not sure which seeds or treatments to purchase? Select your farm's soil type and current sowing season to instantly unlock tailored crop matches and farming recommendations.
+              </Typography>
+              
+              <Box sx={{ display: 'flex', gap: 3, mt: 4 }}>
+                <Box>
+                  <Typography variant="h6" sx={{ color: '#2E7D32', fontWeight: 'bold' }}>1</Typography>
+                  <Typography variant="body2" color="text.secondary">Select Soil Type</Typography>
+                </Box>
+                <Divider orientation="vertical" flexItem />
+                <Box>
+                  <Typography variant="h6" sx={{ color: '#2E7D32', fontWeight: 'bold' }}>2</Typography>
+                  <Typography variant="body2" color="text.secondary">Select Season</Typography>
+                </Box>
+                <Divider orientation="vertical" flexItem />
+                <Box>
+                  <Typography variant="h6" sx={{ color: '#2E7D32', fontWeight: 'bold' }}>3</Typography>
+                  <Typography variant="body2" color="text.secondary">Get Recommendations</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} md={7}>
+            <Paper sx={{ 
+              p: { xs: 3, md: 5 }, 
+              borderRadius: 5, 
+              boxShadow: '0 15px 35px rgba(0,0,0,0.06)',
+              border: '1px solid rgba(46,125,50,0.08)',
+              background: '#FFFFFF'
+            }}>
+              <Stack spacing={3}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                  <FormControl fullWidth>
+                    <InputLabel>Soil Type</InputLabel>
+                    <Select
+                      value={selectedSoil}
+                      onChange={(e) => setSelectedSoil(e.target.value)}
+                      label="Soil Type"
+                    >
+                      {soilTypes.map(type => (
+                        <MenuItem key={type} value={type}>{type}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <FormControl fullWidth>
+                    <InputLabel>Current Season</InputLabel>
+                    <Select
+                      value={selectedSeason}
+                      onChange={(e) => setSelectedSeason(e.target.value)}
+                      label="Current Season"
+                    >
+                      {seasons.map(season => (
+                        <MenuItem key={season} value={season}>{season}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Stack>
+
+                <Box sx={{ 
+                  p: 3, 
+                  borderRadius: 3, 
+                  bgcolor: '#F5FAF5', 
+                  borderLeft: '5px solid #2E7D32',
+                  mt: 1
+                }}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                    RECOMMENDED CROPS
+                  </Typography>
+                  <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1B5E20', mb: 2 }}>
+                    🌾 {currentMatcherResult.crop}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}>
+                    {currentMatcherResult.advice}
+                  </Typography>
+                </Box>
+
+                <Button
+                  variant="contained"
+                  fullWidth
+                  size="large"
+                  onClick={() => handleCategoryClick(currentMatcherResult.category)}
+                  sx={{
+                    bgcolor: '#2E7D32',
+                    py: 1.8,
+                    fontSize: '1.05rem',
+                    fontWeight: 'bold',
+                    borderRadius: 3,
+                    boxShadow: '0 4px 12px rgba(46, 125, 50, 0.2)',
+                    '&:hover': {
+                      bgcolor: '#1B5E20',
+                      boxShadow: '0 6px 16px rgba(46, 125, 50, 0.3)',
+                    }
+                  }}
+                >
+                  Shop Recommended {currentMatcherResult.category}
+                </Button>
+              </Stack>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Weather-based Recommendations with Glass cards */}
+      <Box sx={{ mb: 7, px: { xs: 1, md: 3 } }}>
+        <Typography variant="h4" sx={{ mb: 1, fontWeight: 'bold', color: '#1B5E20' }}>
+          🌤️ Smart Weather Tips & Advice
+        </Typography>
+        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
+          Optimize your farming calendar based on current seasonal changes
+        </Typography>
+        
+        <Grid container spacing={3}>
           {weatherTips.map((tip, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
               <Paper
                 sx={{
-                  p: 3,
+                  p: 4,
                   height: '100%',
                   transition: 'all 0.3s ease',
-                  border: `2px solid ${tip.color}20`,
-                  background: `linear-gradient(135deg, ${tip.color}10, ${tip.color}05)`,
+                  borderRadius: 4,
+                  border: `2px solid ${tip.color}15`,
+                  background: `linear-gradient(135deg, ${tip.color}05, #FFFFFF 100%)`,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.01)',
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: `0 8px 25px ${tip.color}30`,
+                    transform: 'translateY(-5px)',
+                    boxShadow: `0 8px 25px ${tip.color}20`,
                     borderColor: tip.color,
                   }
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="h4" sx={{ mr: 2 }}>
-                    {tip.icon}
-                  </Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: tip.color }}>
-                    {tip.title}
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2.5 }}>
+                    <Typography variant="h3" sx={{ mr: 2 }}>
+                      {tip.icon}
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333' }}>
+                      {tip.title}
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" sx={{ lineHeight: 1.7, color: '#555' }}>
+                    {tip.content}
                   </Typography>
                 </Box>
-                <Typography variant="body2" sx={{ lineHeight: 1.6, color: '#555' }}>
-                  {tip.content}
-                </Typography>
               </Paper>
-          </Grid>
-        ))}
-      </Grid>
+            </Grid>
+          ))}
+        </Grid>
       </Box>
 
-      {/* Farmer Success Stories */}
-      <Box sx={{ mb: 6 }}>
-        <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold', color: '#2E7D32' }}>
-          🌾 Farmer Success Stories
+      {/* Farmer Success Stories with Premium Cards */}
+      <Box sx={{ mb: 6, px: { xs: 1, md: 3 } }}>
+        <Typography variant="h4" sx={{ mb: 1, fontWeight: 'bold', color: '#1B5E20' }}>
+          🌾 Inspiring Farmer Success Stories
+        </Typography>
+        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
+          Real stories of success achieved by using our high-quality agricultural products
         </Typography>
         
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <CircularProgress sx={{ color: '#2E7D32' }} />
           </Box>
         ) : error ? (
-          <Typography variant="body2" sx={{ textAlign: 'center', color: 'warning.main', py: 2, fontStyle: 'italic' }}>
+          <Typography variant="body1" sx={{ textAlign: 'center', color: 'warning.main', py: 4, fontStyle: 'italic' }}>
             {error}
           </Typography>
         ) : farmerStories.length === 0 ? (
-          <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary', py: 4 }}>
+          <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary', py: 6 }}>
             No success stories available at the moment.
           </Typography>
         ) : (
@@ -436,103 +743,104 @@ export default function Home() {
                 <Card
                   sx={{
                     height: '100%',
+                    borderRadius: 5,
+                    border: '1px solid rgba(46,125,50,0.1)',
                     transition: 'all 0.3s ease',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.03)',
                     '&:hover': {
                       transform: 'translateY(-8px)',
-                      boxShadow: 6,
+                      boxShadow: '0 15px 35px rgba(46,125,50,0.15)',
                     },
-                    position: 'relative',
-                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
                   }}
                 >
-                  {/* Farmer Info Header */}
-                  <CardContent sx={{ pb: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <CardContent sx={{ p: 4 }}>
+                    {/* Farmer Avatar & Info */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                       <Avatar
                         src={story.photo}
-                        sx={{ width: 60, height: 60, mr: 2, border: '3px solid #4CAF50' }}
+                        sx={{ width: 65, height: 65, mr: 2, border: '3px solid #2E7D32', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
                       />
                       <Box>
-                        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2E7D32' }}>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1B5E20', lineHeight: 1.2 }}>
                           {story.name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {story.location} • {story.crop}
+                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                          📍 {story.location} • 🌾 {story.crop}
                         </Typography>
                       </Box>
                     </Box>
-                  </CardContent>
 
-
-                  {/* Success Metrics */}
-                  <CardContent sx={{ pt: 1 }}>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2E7D32', mb: 1 }}>
-                        Success Metrics
-                      </Typography>
-                      <Grid container spacing={1}>
-                        <Grid item xs={4}>
-                          <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 }, bgcolor: '#E8F5E8', borderRadius: 1 }}>
-                            <Typography sx={{ fontWeight: 'bold', color: '#2E7D32', fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.25rem' } }}>
-                              {story.yieldIncrease}%
-                            </Typography>
-                            <Typography sx={{ color: 'text.secondary', fontSize: { xs: '0.65rem', sm: '0.75rem' }, display: 'block' }}>
-                              Yield Increase
-                            </Typography>
-                          </Box>
-                        </Grid>
-                        <Grid item xs={4}>
-                          <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 }, bgcolor: '#E3F2FD', borderRadius: 1 }}>
-                            <Typography sx={{ fontWeight: 'bold', color: '#1976D2', fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.25rem' } }}>
-                              ₹{story.profitIncrease?.toLocaleString() || story.profitIncrease}
-                            </Typography>
-                            <Typography sx={{ color: 'text.secondary', fontSize: { xs: '0.65rem', sm: '0.75rem' }, display: 'block' }}>
-                              Profit Increase
-                            </Typography>
-                          </Box>
-                        </Grid>
-                        <Grid item xs={4}>
-                          <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 }, bgcolor: '#FFF3E0', borderRadius: 1 }}>
-                            <Typography sx={{ fontWeight: 'bold', color: '#F57C00', fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.25rem' } }}>
-                              {story.timeSaved}%
-                            </Typography>
-                            <Typography sx={{ color: 'text.secondary', fontSize: { xs: '0.65rem', sm: '0.75rem' }, display: 'block' }}>
-                              Time Saved
-                            </Typography>
-                          </Box>
-                        </Grid>
+                    {/* Yield / Profit Metric Cards */}
+                    <Grid container spacing={1} sx={{ mb: 3 }}>
+                      <Grid item xs={4}>
+                        <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#E8F5E8', borderRadius: 2 }}>
+                          <Typography sx={{ fontWeight: 'bold', color: '#2E7D32', fontSize: '1.1rem' }}>
+                            +{story.yieldIncrease}%
+                          </Typography>
+                          <Typography sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                            Yield
+                          </Typography>
+                        </Box>
                       </Grid>
-                    </Box>
+                      <Grid item xs={4}>
+                        <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#E3F2FD', borderRadius: 2 }}>
+                          <Typography sx={{ fontWeight: 'bold', color: '#1976D2', fontSize: '1.1rem' }}>
+                            ₹{(story.profitIncrease >= 100000) ? `${(story.profitIncrease / 100000).toFixed(1)}L` : story.profitIncrease?.toLocaleString()}
+                          </Typography>
+                          <Typography sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                            Profit
+                          </Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#FFF3E0', borderRadius: 2 }}>
+                          <Typography sx={{ fontWeight: 'bold', color: '#F57C00', fontSize: '1.1rem' }}>
+                            {story.timeSaved}%
+                          </Typography>
+                          <Typography sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                            Time Saved
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
 
-                    {/* Testimonial */}
-                    <Typography variant="body2" sx={{ 
-                      fontStyle: 'italic', 
-                      color: '#666', 
-                      mb: 2,
-                      lineHeight: 1.6,
-                      bgcolor: '#FAFAFA',
-                      p: 2,
-                      borderRadius: 1,
-                      borderLeft: '4px solid #4CAF50'
-                    }}>
+                    {/* Testimonial Quote */}
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        fontStyle: 'italic', 
+                        color: '#555', 
+                        lineHeight: 1.7,
+                        bgcolor: '#F9FFF9',
+                        p: 2.5,
+                        borderRadius: 3,
+                        borderLeft: '4px solid #2E7D32',
+                        mb: 3
+                      }}
+                    >
                       "{story.testimonial}"
                     </Typography>
 
-                    {/* Products Used */}
+                    {/* Products Badge List */}
                     <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                        Products Used:
+                      <Typography variant="caption" sx={{ fontWeight: 'bold', color: 'text.secondary', display: 'block', mb: 1 }}>
+                        PRODUCTS USED:
                       </Typography>
-                      <Stack direction="row" spacing={1}>
+                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                         {story.productsUsed?.map((product, idx) => (
                           <Chip
                             key={idx}
                             label={product}
                             size="small"
                             sx={{
-                              bgcolor: '#4CAF50',
-                              color: 'white',
+                              bgcolor: '#E8F5E8',
+                              color: '#2E7D32',
                               fontWeight: 'bold',
+                              fontSize: '0.75rem',
+                              border: '1px solid rgba(46,125,50,0.15)'
                             }}
                           />
                         ))}
