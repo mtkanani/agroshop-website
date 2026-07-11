@@ -131,19 +131,40 @@ export default function ProductDetail() {
   const hasMultipleImages = images.length > 1;
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 5, bgcolor: '#FAFDF6' }}>
       {/* Back Button */}
       <Button 
         variant="outlined" 
         startIcon={<ArrowBack />}
         onClick={() => navigate('/products')}
-        sx={{ mb: 3, borderColor: '#2E7D32', color: '#2E7D32', '&:hover': { borderColor: '#1B5E20' } }}
+        sx={{ 
+          mb: 4, 
+          borderColor: '#2E7D32', 
+          color: '#2E7D32', 
+          borderRadius: 3,
+          px: 3,
+          py: 1,
+          fontWeight: 'bold',
+          '&:hover': { 
+            borderColor: '#1B5E20',
+            bgcolor: 'rgba(46,125,50,0.05)',
+            transform: 'translateX(-4px)'
+          },
+          transition: 'all 0.3s'
+        }}
       >
         Back to Products
       </Button>
 
-      <Paper sx={{ p: { xs: 2, md: 4 }, borderRadius: 3, boxShadow: 3 }}>
-        <Grid container spacing={4}>
+      <Paper sx={{ 
+        p: { xs: 3, md: 5 }, 
+        borderRadius: 6, 
+        boxShadow: '0 20px 40px rgba(46,125,50,0.06)',
+        border: '1px solid rgba(46,125,50,0.08)',
+        background: '#FFFFFF'
+      }}>
+        <Grid container spacing={5}>
+          
           {/* Product Images Section */}
           <Grid item xs={12} md={6}>
             <Box sx={{ position: 'relative' }}>
@@ -152,14 +173,16 @@ export default function ProductDetail() {
                 sx={{
                   position: 'relative',
                   width: '100%',
-                  height: { xs: 300, md: 400 },
-                  borderRadius: 2,
+                  height: { xs: 300, md: 420 },
+                  borderRadius: 5,
                   overflow: 'hidden',
-                  bgcolor: '#f5f5f5',
+                  bgcolor: '#F9FBF9',
+                  border: '1px solid rgba(46,125,50,0.08)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  mb: 2
+                  boxShadow: 'inset 0 0 20px rgba(0,0,0,0.02)',
+                  mb: 3
                 }}
               >
                 {images.length > 0 ? (
@@ -167,11 +190,11 @@ export default function ProductDetail() {
                     src={images[selectedImage]}
                     alt={`${productDetail.name} - Image ${selectedImage + 1}`}
                     style={{
-                      width: '100%',
-                      height: '100%',
+                      width: '90%',
+                      height: '90%',
                       objectFit: 'contain',
                       transform: `scale(${imageZoom})`,
-                      transition: 'transform 0.3s ease',
+                      transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                       cursor: imageZoom > 1 ? 'zoom-out' : 'zoom-in'
                     }}
                     onClick={() => setImageZoom(imageZoom > 1 ? 1 : 1.5)}
@@ -185,13 +208,15 @@ export default function ProductDetail() {
 
               {/* Zoom Controls */}
               {images.length > 0 && (
-                <Box sx={{ position: 'absolute', top: 10, right: 10, display: 'flex', gap: 1 }}>
+                <Box sx={{ position: 'absolute', top: 15, right: 15, display: 'flex', gap: 1, zIndex: 2 }}>
                   <IconButton
                     size="small"
                     onClick={handleZoomOut}
                     sx={{ 
-                      bgcolor: 'rgba(255,255,255,0.9)', 
-                      '&:hover': { bgcolor: 'rgba(255,255,255,1)' } 
+                      bgcolor: 'white', 
+                      color: '#2E7D32',
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                      '&:hover': { bgcolor: '#F5FAF5' } 
                     }}
                   >
                     <ZoomOut fontSize="small" />
@@ -200,8 +225,10 @@ export default function ProductDetail() {
                     size="small"
                     onClick={handleZoomIn}
                     sx={{ 
-                      bgcolor: 'rgba(255,255,255,0.9)', 
-                      '&:hover': { bgcolor: 'rgba(255,255,255,1)' } 
+                      bgcolor: 'white', 
+                      color: '#2E7D32',
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                      '&:hover': { bgcolor: '#F5FAF5' } 
                     }}
                   >
                     <ZoomIn fontSize="small" />
@@ -209,23 +236,24 @@ export default function ProductDetail() {
                 </Box>
               )}
 
-              {/* Thumbnail Images */}
+              {/* Thumbnail Gallery */}
               {hasMultipleImages && (
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 2 }}>
+                <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', justifyContent: 'center', mt: 3 }}>
                   {images.map((image, index) => (
                     <Box
                       key={index}
                       sx={{
-                        width: 80,
-                        height: 80,
-                        borderRadius: 1,
+                        width: 75,
+                        height: 75,
+                        borderRadius: 3,
                         overflow: 'hidden',
                         cursor: 'pointer',
-                        border: selectedImage === index ? '3px solid #2E7D32' : '2px solid #e0e0e0',
-                        transition: 'all 0.3s ease',
+                        border: selectedImage === index ? '3px solid #2E7D32' : '2px solid rgba(46,125,50,0.15)',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        boxShadow: selectedImage === index ? '0 4px 12px rgba(46,125,50,0.2)' : 'none',
                         '&:hover': {
                           borderColor: '#2E7D32',
-                          transform: 'scale(1.05)'
+                          transform: 'scale(1.08)'
                         }
                       }}
                       onClick={() => handleImageClick(index)}
@@ -248,75 +276,110 @@ export default function ProductDetail() {
 
           {/* Product Details Section */}
           <Grid item xs={12} md={6}>
-            <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-              {/* Product Title and Category */}
-              <Box sx={{ mb: 3 }}>
-                <Typography sx={{ fontWeight: 'bold', color: '#2E7D32', mb: 1, fontSize: { xs: '1.6rem', sm: '2.1rem', md: '2.5rem' }, lineHeight: 1.2 }}>
+            <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              
+              <Box>
+                {/* Badges Bar */}
+                <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
+                  <Chip
+                    label={productDetail.category?.name || productDetail.category || 'Uncategorized'}
+                    sx={{
+                      bgcolor: '#E8F5E8',
+                      color: '#2E7D32',
+                      fontWeight: 'bold',
+                      fontSize: '0.8rem',
+                      px: 0.5
+                    }}
+                  />
+                  {productDetail.stock === 0 ? (
+                    <Chip label="❌ Out of Stock" color="error" size="small" sx={{ fontWeight: 'bold' }} />
+                  ) : productDetail.stock < 5 ? (
+                    <Chip label={`⚠️ Only ${productDetail.stock} left!`} color="warning" size="small" sx={{ fontWeight: 'bold' }} />
+                  ) : (
+                    <Chip label="✅ In Stock" color="success" variant="outlined" size="small" sx={{ fontWeight: 'bold', borderColor: '#2E7D32', color: '#2E7D32' }} />
+                  )}
+                </Stack>
+
+                {/* Title */}
+                <Typography sx={{ 
+                  fontWeight: 850, 
+                  color: '#1B5E20', 
+                  mb: 1.5, 
+                  fontSize: { xs: '1.8rem', sm: '2.4rem', md: '2.8rem' }, 
+                  lineHeight: 1.2 
+                }}>
                   {productDetail.name}
                 </Typography>
-                <Chip
-                  label={productDetail.category?.name || 'Uncategorized'}
-                  sx={{
-                    bgcolor: '#E8F5E8',
-                    color: '#2E7D32',
-                    fontWeight: 'bold',
-                    mb: 2
-                  }}
-                />
+
+                {/* Ratings */}
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <Rating
+                    value={Number(productDetail.rating) || 0}
+                    precision={0.1}
+                    readOnly
+                    size="medium"
+                    sx={{ mr: 1, color: '#FFB300' }}
+                  />
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                    {productDetail.rating || 0} / 5 Rating
+                  </Typography>
+                </Box>
+
+                {/* Price Display */}
+                <Paper variant="outlined" sx={{ 
+                  p: 3, 
+                  borderRadius: 4, 
+                  bgcolor: '#FAFDF6', 
+                  borderColor: 'rgba(46,125,50,0.12)', 
+                  mb: 4,
+                  display: 'inline-block'
+                }}>
+                  <Stack direction="row" alignItems="baseline" spacing={1}>
+                    <Typography sx={{ fontWeight: '900', color: '#1B5E20', fontSize: { xs: '2rem', sm: '2.6rem', md: '3rem' }, lineHeight: 1 }}>
+                      ₹{productDetail.price?.toLocaleString() || 0}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+                      INR
+                    </Typography>
+                  </Stack>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1, fontWeight: 500 }}>
+                    ✓ Inclusive of all local taxes & delivery surcharges
+                  </Typography>
+                </Paper>
+
+                {/* Description */}
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, color: '#333' }}>
+                    Product Details & Description
+                  </Typography>
+                  <Typography variant="body1" sx={{ lineHeight: 1.7, color: '#555', whiteSpace: 'pre-line' }}>
+                    {productDetail.description || 'No description available for this product.'}
+                  </Typography>
+                </Box>
               </Box>
 
-              {/* Rating */}
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Rating
-                  value={Number(productDetail.rating) || 0}
-                  precision={0.1}
-                  readOnly
-                  size="large"
-                  sx={{ mr: 1 }}
-                />
-                <Typography variant="body2" color="text.secondary">
-                  ({productDetail.rating || 0} out of 5)
-                </Typography>
-              </Box>
-
-              {/* Price */}
-              <Box sx={{ mb: 3 }}>
-                <Typography sx={{ fontWeight: 'bold', color: '#2E7D32', fontSize: { xs: '1.8rem', sm: '2.4rem', md: '3rem' } }}>
-                  ₹{productDetail.price?.toLocaleString() || 0}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Inclusive of all taxes
-                </Typography>
-              </Box>
-
-              {/* Description */}
-              <Box sx={{ mb: 4, flex: 1 }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: '#333' }}>
-                  Product Description
-                </Typography>
-                <Typography variant="body1" sx={{ lineHeight: 1.8, color: '#666' }}>
-                  {productDetail.description || 'No description available for this product.'}
-                </Typography>
-              </Box>
-
-              {/* Action Buttons */}
-              <Box sx={{ mt: 'auto' }}>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 3 }}>
+              {/* Action Section */}
+              <Box>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 4 }}>
                   <Button
                     variant="contained"
                     size="large"
                     startIcon={<ShoppingCart />}
                     onClick={handleAddToCart}
+                    disabled={productDetail.stock === 0}
                     sx={{
                       bgcolor: '#2E7D32',
-                      py: 1.5,
+                      py: 1.8,
                       px: 4,
-                      fontSize: '1.1rem',
+                      fontSize: '1.05rem',
                       fontWeight: 'bold',
+                      borderRadius: 3.5,
+                      boxShadow: '0 6px 16px rgba(46, 125, 50, 0.25)',
+                      flex: 1,
                       '&:hover': {
                         bgcolor: '#1B5E20',
                         transform: 'translateY(-2px)',
-                        boxShadow: 4
+                        boxShadow: '0 8px 24px rgba(46, 125, 50, 0.4)'
                       },
                       transition: 'all 0.3s ease'
                     }}
@@ -327,18 +390,22 @@ export default function ProductDetail() {
                     variant="outlined"
                     size="large"
                     onClick={handleBuyNow}
+                    disabled={productDetail.stock === 0}
                     sx={{
                       borderColor: '#2E7D32',
                       color: '#2E7D32',
-                      py: 1.5,
+                      borderWidth: '2px',
+                      py: 1.8,
                       px: 4,
-                      fontSize: '1.1rem',
+                      fontSize: '1.05rem',
                       fontWeight: 'bold',
+                      borderRadius: 3.5,
+                      flex: 1,
                       '&:hover': {
                         borderColor: '#1B5E20',
-                        bgcolor: '#f1f8e9',
+                        borderWidth: '2px',
+                        bgcolor: 'rgba(46,125,50,0.03)',
                         transform: 'translateY(-2px)',
-                        boxShadow: 4
                       },
                       transition: 'all 0.3s ease'
                     }}
@@ -346,40 +413,65 @@ export default function ProductDetail() {
                     Buy Now
                   </Button>
                 </Stack>
-              </Box>
 
-              {/* Product Features */}
-              <Box sx={{ mt: 3 }}>
-                <Divider sx={{ mb: 2 }} />
+                {/* Trust Seals Bar */}
+                <Divider sx={{ mb: 3 }} />
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
-                    <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 } }}>
-                      <LocalShipping sx={{ fontSize: { xs: 30, sm: 40 }, color: '#2E7D32', mb: 1 }} />
-                      <Typography sx={{ fontWeight: 'bold', fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.85rem' } }}>
+                    <Paper variant="outlined" sx={{ 
+                      p: 2, 
+                      textAlign: 'center', 
+                      borderRadius: 3, 
+                      border: '1px solid rgba(46,125,50,0.06)',
+                      bgcolor: '#FAFAFA',
+                      '&:hover': { bgcolor: '#F5FAF5', borderColor: '#2E7D32' },
+                      transition: 'all 0.3s'
+                    }}>
+                      <LocalShipping sx={{ fontSize: 32, color: '#2E7D32', mb: 0.5 }} />
+                      <Typography sx={{ fontWeight: 'bold', fontSize: '0.8rem', color: '#333' }}>
                         Free Delivery
                       </Typography>
-                    </Box>
+                    </Paper>
                   </Grid>
                   <Grid item xs={4}>
-                    <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 } }}>
-                      <Security sx={{ fontSize: { xs: 30, sm: 40 }, color: '#2E7D32', mb: 1 }} />
-                      <Typography sx={{ fontWeight: 'bold', fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.85rem' } }}>
-                        Secure Payment
+                    <Paper variant="outlined" sx={{ 
+                      p: 2, 
+                      textAlign: 'center', 
+                      borderRadius: 3, 
+                      border: '1px solid rgba(46,125,50,0.06)',
+                      bgcolor: '#FAFAFA',
+                      '&:hover': { bgcolor: '#F5FAF5', borderColor: '#2E7D32' },
+                      transition: 'all 0.3s'
+                    }}>
+                      <Security sx={{ fontSize: 32, color: '#2E7D32', mb: 0.5 }} />
+                      <Typography sx={{ fontWeight: 'bold', fontSize: '0.8rem', color: '#333' }}>
+                        100% Secure
                       </Typography>
-                    </Box>
+                    </Paper>
                   </Grid>
                   <Grid item xs={4}>
-                    <Box sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1 } }}>
-                      <Star sx={{ fontSize: { xs: 30, sm: 40 }, color: '#2E7D32', mb: 1 }} />
-                      <Typography sx={{ fontWeight: 'bold', fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.85rem' } }}>
-                        Quality Assured
+                    <Paper variant="outlined" sx={{ 
+                      p: 2, 
+                      textAlign: 'center', 
+                      borderRadius: 3, 
+                      border: '1px solid rgba(46,125,50,0.06)',
+                      bgcolor: '#FAFAFA',
+                      '&:hover': { bgcolor: '#F5FAF5', borderColor: '#2E7D32' },
+                      transition: 'all 0.3s'
+                    }}>
+                      <Star sx={{ fontSize: 32, color: '#2E7D32', mb: 0.5 }} />
+                      <Typography sx={{ fontWeight: 'bold', fontSize: '0.8rem', color: '#333' }}>
+                        Premium Quality
                       </Typography>
-                    </Box>
+                    </Paper>
                   </Grid>
                 </Grid>
+
               </Box>
+
             </Box>
           </Grid>
+
         </Grid>
       </Paper>
 
