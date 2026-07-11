@@ -29,7 +29,13 @@ exports.getUserById = async (req, res) => {
 exports.updateUser = async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
-    user.name = req.body.name || user.name;
+    if (req.body.firstName) user.firstName = req.body.firstName;
+    if (req.body.lastName) user.lastName = req.body.lastName;
+    if (req.body.name) {
+      const parts = req.body.name.trim().split(/\s+/);
+      user.firstName = parts[0] || user.firstName;
+      user.lastName = parts.slice(1).join(' ') || user.lastName;
+    }
     user.email = req.body.email || user.email;
     user.isAdmin = req.body.isAdmin !== undefined ? req.body.isAdmin : user.isAdmin;
     await user.save();
