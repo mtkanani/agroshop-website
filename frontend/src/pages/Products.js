@@ -127,7 +127,7 @@ export default function Products() {
           quantity: existingItem.quantity + 1,
           price: product.price,
           name: product.name,
-          image: product.images?.[0] || ''
+          image: product.images?.[0] || product['images[0]'] || ''
         }));
         setSnackbar({
           open: true,
@@ -140,7 +140,7 @@ export default function Products() {
           quantity: 1,
           price: product.price,
           name: product.name,
-          image: product.images?.[0] || ''
+          image: product.images?.[0] || product['images[0]'] || ''
         }));
         setSnackbar({
           open: true,
@@ -460,7 +460,7 @@ export default function Products() {
                       <CardMedia
                         component="img"
                         height="200"
-                        image={product.images?.[0] || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb19675?w=500&auto=format&fit=crop&q=60'}
+                        image={product.images?.[0] || product['images[0]'] || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb19675?w=500&auto=format&fit=crop&q=60'}
                         alt={product.name}
                         sx={{
                           objectFit: 'cover',

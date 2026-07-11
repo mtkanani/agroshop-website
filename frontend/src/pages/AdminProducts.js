@@ -240,8 +240,8 @@ export default function AdminProducts() {
                     Category: {product.category?.name || 'Uncategorized'}
                   </Typography>
                   <Rating value={Number(product.rating)} precision={0.1} readOnly size="small" sx={{ mt: 1 }} />
-                  {product.images && product.images[0] && (
-                    <Box component="img" src={product.images[0]} alt={product.name} sx={{ width: '100%', maxHeight: 120, objectFit: 'cover', mt: 1, borderRadius: 1 }} />
+                  {(product.images?.[0] || product['images[0]']) && (
+                    <Box component="img" src={product.images?.[0] || product['images[0]']} alt={product.name} sx={{ width: '100%', maxHeight: 120, objectFit: 'cover', mt: 1, borderRadius: 1 }} />
                   )}
                   <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
                     <Button

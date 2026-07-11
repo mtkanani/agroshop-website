@@ -51,7 +51,7 @@ export default function ProductDetail() {
         name: productDetail.name,
         price: productDetail.price,
         quantity: 1,
-        image: productDetail.images?.[0] || '',
+        image: productDetail.images?.[0] || productDetail['images[0]'] || '',
       }));
       setOpen(true);
     }
@@ -66,7 +66,7 @@ export default function ProductDetail() {
         name: productDetail.name,
         price: productDetail.price,
         quantity: 1,
-        image: productDetail.images?.[0] || '',
+        image: productDetail.images?.[0] || productDetail['images[0]'] || '',
       }));
       navigate('/checkout');
     }
@@ -125,7 +125,9 @@ export default function ProductDetail() {
     );
   }
 
-  const images = productDetail.images || [];
+  const images = (productDetail.images && productDetail.images.length > 0 && productDetail.images[0])
+    ? productDetail.images
+    : (productDetail['images[0]'] ? [productDetail['images[0]']] : []);
   const hasMultipleImages = images.length > 1;
 
   return (
