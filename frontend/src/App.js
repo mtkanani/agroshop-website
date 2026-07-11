@@ -160,21 +160,18 @@ function AppNav() {
         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
           <Button 
             color="inherit" 
-            startIcon={<HomeIcon />}
             onClick={() => navigate('/')}
           >
             Home
           </Button>
           <Button 
             color="inherit" 
-            startIcon={<Store />}
             onClick={() => navigate('/products')}
           >
             Products
           </Button>
           <Button 
             color="inherit" 
-            startIcon={<Support />}
             onClick={() => navigate('/contact')}
           >
             Contact
@@ -183,21 +180,18 @@ function AppNav() {
             <>
               <Button 
                 color="inherit" 
-                startIcon={<Person />}
                 onClick={() => navigate('/profile')}
               >
                 Profile
               </Button>
               <Button 
                 color="inherit" 
-                startIcon={<LocalShipping />}
                 onClick={() => navigate('/orders')}
               >
                 Orders
               </Button>
               <Button 
                 color="inherit" 
-                startIcon={<ShoppingCart />}
                 onClick={() => navigate('/cart')}
               >
                 Cart
@@ -208,7 +202,6 @@ function AppNav() {
               {userInfo.isAdmin && (
                 <Button 
                   color="inherit" 
-                  startIcon={<AdminPanelSettings />}
                   onClick={() => navigate('/admin/dashboard')}
                 >
                   Admin
@@ -216,7 +209,6 @@ function AppNav() {
               )}
               <Button 
                 color="inherit" 
-                startIcon={<Logout />}
                 onClick={handleLogout}
               >
                 Logout
@@ -226,14 +218,12 @@ function AppNav() {
             <>
               <Button 
                 color="inherit" 
-                startIcon={<LoginIcon />}
                 onClick={() => navigate('/login')}
               >
                 Login
               </Button>
               <Button 
                 color="inherit" 
-                startIcon={<RegisterIcon />}
                 onClick={() => navigate('/register')}
               >
                 Register
