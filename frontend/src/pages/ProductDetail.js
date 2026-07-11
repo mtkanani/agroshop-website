@@ -28,21 +28,58 @@ import {
   ZoomIn,
   ZoomOut
 } from '@mui/icons-material';
-import { fetchProductDetail } from '../features/productsSlice';
+import { fetchProductDetail, fetchProducts } from '../features/productsSlice';
 import { addItem } from '../features/cartSlice';
+
+const categoryGuides = {
+  'Seeds': {
+    usage: 'Sow in well-prepared, damp soil at a depth of 2-3 cm. Maintain consistent soil moisture during germination (approx. 7-10 days).',
+    season: 'Best planted during early Monsoon (Kharif) or start of Winter (Rabi) depending on crop type.',
+    dosage: 'Standard spacing: 15-20 cm between plants, 45-60 cm between rows.',
+    precautions: 'Store seed packs in a cool, dry place. Avoid waterlogging in the sowing area.'
+  },
+  'Fertilizers': {
+    usage: 'Spread evenly around the base of the crop (avoiding direct contact with the stem) and mix slightly into the topsoil. Water thoroughly immediately after application.',
+    season: 'Apply during early growth stages or pre-sowing preparation to boost crop vegetative growth.',
+    dosage: 'Standard dose: 50-100 grams per square meter or as recommended for specific crops.',
+    precautions: 'Wear protective gloves during handling. Store away from moisture and direct sunlight.'
+  },
+  'Sprayers': {
+    usage: 'Fill the tank with clean water and mix the target solution thoroughly. Pump to build pressure and spray evenly on leaves until damp.',
+    season: 'Can be used year-round for watering, pest spraying, and foliar nutrient feeding.',
+    dosage: 'Calibrate nozzle flow before spraying. Maintain steady walking speed for uniform coverage.',
+    precautions: 'Clean the tank and nozzle thoroughly after each use, especially when shifting between pesticides and nutrients.'
+  },
+  'Pesticides': {
+    usage: 'Dilute the recommended dosage in clean water. Spray during calm hours (early morning or late evening) to avoid chemical wind-drift.',
+    season: 'Apply as a preventative measure during high-humidity seasons (Monsoon) or at first sign of pest infestation.',
+    dosage: 'Standard dilution: 2-3 ml per liter of water (refer to label guidelines for exact crop dilution).',
+    precautions: 'Always wear mask, goggles, and gloves. Keep away from children and pets. Do not spray right before harvest.'
+  }
+};
 
 export default function ProductDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { productDetail, loading, error } = useSelector(state => state.products);
+  const { productDetail, loading, error, products } = useSelector(state => state.products);
   const [open, setOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
   const [imageZoom, setImageZoom] = useState(1);
 
   React.useEffect(() => {
-    if (id) dispatch(fetchProductDetail(id));
+    if (id) {
+      dispatch(fetchProductDetail(id));
+      setSelectedImage(0); // Reset selected image when ID changes
+      setImageZoom(1);
+    }
   }, [dispatch, id]);
+
+  React.useEffect(() => {
+    if (products.length === 0) {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch, products.length]);
 
   const handleAddToCart = () => {
     if (productDetail) {
@@ -476,6 +513,164 @@ export default function ProductDetail() {
 
         </Grid>
       </Paper>
+
+      {/* SMART APPLICATION GUIDE */}
+      {(() => {
+        const currentCategory = productDetail.category?.name || productDetail.category || 'Seeds';
+        const guide = categoryGuides[currentCategory] || categoryGuides['Seeds'];
+        
+        const relatedProducts = products
+          .filter(p => p._id !== productDetail._id)
+          .filter(p => (p.category?.name || p.category) === currentCategory)
+          .slice(0, 4);
+
+        const displayRelated = relatedProducts.length >= 3 
+          ? relatedProducts 
+          : [
+              ...relatedProducts, 
+              ...products.filter(p => p._id !== productDetail._id && !relatedProducts.find(rp => rp._id === p._id))
+            ].slice(0, 4);
+
+        return (
+          <>
+            <Paper sx={{ 
+              p: { xs: 3, md: 4 }, 
+              borderRadius: 5, 
+              mt: 5, 
+              border: '1px solid rgba(46,125,50,0.08)',
+              boxShadow: '0 10px 30px rgba(46,125,50,0.04)'
+            }}>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1B5E20', mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                💡 Smart Advisor: Cultivation & Application Guide
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Farming tips and recommended dosage schedules specifically tailored for {currentCategory} items.
+              </Typography>
+              
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Box sx={{ p: 2.5, borderRadius: 3, bgcolor: '#F9FBF9', height: '100%', borderLeft: '4px solid #2E7D32' }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#2E7D32', mb: 1 }}>
+                      📖 Sowing & Usage Directions
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}>
+                      {guide.usage}
+                    </Typography>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Box sx={{ p: 2.5, borderRadius: 3, bgcolor: '#F5FAF5', height: '100%', borderLeft: '4px solid #8BC34A' }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#689F38', mb: 1 }}>
+                      📅 Ideal Season Calendar
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}>
+                      {guide.season}
+                    </Typography>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Box sx={{ p: 2.5, borderRadius: 3, bgcolor: '#E3F2FD', height: '100%', borderLeft: '4px solid #2196F3' }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#1976D2', mb: 1 }}>
+                      🧪 Recommended Dosage
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}>
+                      {guide.dosage}
+                    </Typography>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                  <Box sx={{ p: 2.5, borderRadius: 3, bgcolor: '#FFF3E0', height: '100%', borderLeft: '4px solid #FF9800' }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#F57C00', mb: 1 }}>
+                      ⚠️ Protective Precautions
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#555', lineHeight: 1.6 }}>
+                      {guide.precautions}
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+
+            {/* RELATED PRODUCTS */}
+            {displayRelated.length > 0 && (
+              <Box sx={{ mt: 6 }}>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1B5E20', mb: 1 }}>
+                  🌿 Related Agricultural Products
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  Other items that farmers frequently purchase together for matching soil needs.
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  {displayRelated.map(prod => (
+                    <Grid item xs={12} sm={6} md={3} key={prod._id}>
+                      <Card 
+                        onClick={() => navigate(`/product/${prod._id}`)}
+                        sx={{ 
+                          height: '100%', 
+                          borderRadius: 4, 
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          border: '1px solid rgba(46,125,50,0.06)',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+                          '&:hover': {
+                            transform: 'translateY(-6px)',
+                            boxShadow: '0 10px 25px rgba(46,125,50,0.12)',
+                            borderColor: '#2E7D32'
+                          }
+                        }}
+                      >
+                        <Box sx={{ 
+                          height: 180, 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          bgcolor: '#F9FBF9',
+                          p: 2
+                        }}>
+                          <img 
+                            src={prod.images?.[0] || prod['images[0]'] || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb19675?w=200'} 
+                            alt={prod.name}
+                            style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain' }}
+                          />
+                        </Box>
+                        <CardContent sx={{ p: 2.5 }}>
+                          <Typography 
+                            variant="subtitle1" 
+                            sx={{ fontWeight: 'bold', color: '#333', mb: 0.5, height: 48, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
+                          >
+                            {prod.name}
+                          </Typography>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#2E7D32', mb: 1.5 }}>
+                            ₹{prod.price?.toLocaleString()}
+                          </Typography>
+                          <Button 
+                            variant="outlined" 
+                            fullWidth 
+                            size="small" 
+                            sx={{ 
+                              borderRadius: 2, 
+                              borderColor: '#2E7D32', 
+                              color: '#2E7D32',
+                              fontWeight: 'bold',
+                              '&:hover': { bgcolor: '#F5FAF5', borderColor: '#1B5E20' }
+                            }}
+                          >
+                            View Details
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
+          </>
+        );
+      })()}
 
       {/* Success Snackbar */}
       <Snackbar
