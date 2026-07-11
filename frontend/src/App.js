@@ -172,6 +172,13 @@ function AppNav() {
           >
             Products
           </Button>
+          <Button 
+            color="inherit" 
+            startIcon={<Support />}
+            onClick={() => navigate('/contact')}
+          >
+            Contact
+          </Button>
           {userInfo ? (
             <>
               <Button 
@@ -311,6 +318,16 @@ function AppNav() {
                 >
                   <ListItemIcon sx={{ color: '#2E7D32' }}><Store /></ListItemIcon>
                   <ListItemText primary="Products" primaryTypographyProps={{ fontWeight: 600, color: '#2E7D32' }} />
+                </ListItemButton>
+              </ListItem>
+
+              <ListItem disablePadding sx={{ mb: 1 }}>
+                <ListItemButton 
+                  onClick={() => navigate('/contact')}
+                  sx={{ borderRadius: 2, '&:hover': { bgcolor: 'rgba(46, 125, 50, 0.08)' } }}
+                >
+                  <ListItemIcon sx={{ color: '#2E7D32' }}><Support /></ListItemIcon>
+                  <ListItemText primary="Contact Us" primaryTypographyProps={{ fontWeight: 600, color: '#2E7D32' }} />
                 </ListItemButton>
               </ListItem>
 
