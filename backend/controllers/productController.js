@@ -2,6 +2,30 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 const cloudinary = require('../config/cloudinary');
 
+// Helper to query products by both Mongoose ObjectId and raw String ID
+const findProductById = async (id) => {
+  let product = null;
+  // 1. Try finding by mongoose cast (ObjectId)
+  try {
+    product = await Product.findById(id);
+  } catch (err) {
+    // Ignore casting error
+  }
+  
+  // 2. Fallback to raw string query in MongoDB driver collection
+  if (!product) {
+    try {
+      const rawProduct = await Product.collection.findOne({ _id: id });
+      if (rawProduct) {
+        product = Product.hydrate(rawProduct);
+      }
+    } catch (err) {
+      console.error('Raw query error:', err);
+    }
+  }
+  return product;
+};
+
 exports.getProducts = async (req, res) => {
   const { category, search } = req.query;
   let filter = {};
@@ -12,9 +36,15 @@ exports.getProducts = async (req, res) => {
 };
 
 exports.getProductById = async (req, res) => {
-  const product = await Product.findById(req.params.id).populate('category');
-  if (product) res.json(product);
-  else res.status(404).json({ message: 'Product not found' });
+  const product = await findProductById(req.params.id);
+  if (product) {
+    if (product.category) {
+      await product.populate('category');
+    }
+    res.json(product);
+  } else {
+    res.status(404).json({ message: 'Product not found' });
+  }
 };
 
 exports.createProduct = async (req, res) => {
@@ -34,7 +64,7 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   console.log('Update product body:', req.body); // Debug log
-  const product = await Product.findById(req.params.id);
+  const product = await findProductById(req.params.id);
   if (product) {
     product.name = req.body.name || product.name;
     product.description = req.body.description || product.description;
@@ -51,8 +81,9 @@ exports.updateProduct = async (req, res) => {
 };
 
 exports.deleteProduct = async (req, res) => {
-  const product = await Product.findByIdAndDelete(req.params.id);
+  const product = await findProductById(req.params.id);
   if (product) {
+    await Product.collection.deleteOne({ _id: product._id });
     res.json({ message: 'Product removed' });
   } else {
     res.status(404).json({ message: 'Product not found' });
@@ -61,7 +92,7 @@ exports.deleteProduct = async (req, res) => {
 
 exports.addReview = async (req, res) => {
   const { rating, comment } = req.body;
-  const product = await Product.findById(req.params.id);
+  const product = await findProductById(req.params.id);
   if (product) {
     const alreadyReviewed = product.reviews.find(r => r.user.toString() === req.user._id.toString());
     if (alreadyReviewed) return res.status(400).json({ message: 'Product already reviewed' });
@@ -82,7 +113,7 @@ exports.addReview = async (req, res) => {
 };
 
 exports.uploadProductImage = async (req, res) => {
-  const product = await Product.findById(req.params.id);
+  const product = await findProductById(req.params.id);
   if (!product) return res.status(404).json({ message: 'Product not found' });
   if (!req.file) return res.status(400).json({ message: 'No image file' });
   const result = await cloudinary.uploader.upload_stream({ resource_type: 'image' }, async (error, result) => {
@@ -92,4 +123,4 @@ exports.uploadProductImage = async (req, res) => {
     res.json({ image: result.secure_url });
   });
   result.end(req.file.buffer);
-}; 
+};
