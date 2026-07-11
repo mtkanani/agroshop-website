@@ -16,8 +16,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Divider
+  Divider,
+  IconButton
 } from '@mui/material';
+import ChevronLeft from '@mui/icons-material/ChevronLeft';
+import ChevronRight from '@mui/icons-material/ChevronRight';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { getApprovedStories } from '../api/successStoryApi';
 import farmBg from '../assets/farm.jpg';
 
@@ -171,6 +176,55 @@ export default function Home() {
   // Interactive Matcher State
   const [selectedSoil, setSelectedSoil] = useState('Loamy (Fertile & Rich)');
   const [selectedSeason, setSelectedSeason] = useState('Monsoon (Kharif)');
+
+  // Swiper State & Responsive Width Handling
+  const theme = useTheme();
+  const isMd = useMediaQuery(theme.breakpoints.up('md')); // Laptop/Desktop (3 items)
+  const isSm = useMediaQuery(theme.breakpoints.up('sm')); // Tablet (2 items)
+  const visibleCount = isMd ? 3 : (isSm ? 2 : 1);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const minSwipeDistance = 50;
+
+  const maxIndex = Math.max(0, farmerStories.length - visibleCount);
+
+  // Reset index if visibleCount changes to avoid layout overflow
+  useEffect(() => {
+    setCurrentIndex((prev) => Math.min(prev, maxIndex));
+  }, [visibleCount, maxIndex]);
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
+  };
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      handleNext();
+    } else if (isRightSwipe) {
+      handlePrev();
+    }
+  };
 
   useEffect(() => {
     fetchSuccessStories();
@@ -737,120 +791,216 @@ export default function Home() {
             No success stories available at the moment.
           </Typography>
         ) : (
-          <Grid container spacing={3}>
-            {farmerStories.map((story, index) => (
-              <Grid item xs={12} sm={6} md={4} key={story._id || index}>
-                <Card
-                  sx={{
-                    height: '100%',
-                    borderRadius: 5,
-                    border: '1px solid rgba(46,125,50,0.1)',
-                    transition: 'all 0.3s ease',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.03)',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: '0 15px 35px rgba(46,125,50,0.15)',
-                    },
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <CardContent sx={{ p: 4 }}>
-                    {/* Farmer Avatar & Info */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                      <Avatar
-                        src={story.photo}
-                        sx={{ width: 65, height: 65, mr: 2, border: '3px solid #2E7D32', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
-                      />
-                      <Box>
-                        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1B5E20', lineHeight: 1.2 }}>
-                          {story.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                          📍 {story.location} • 🌾 {story.crop}
-                        </Typography>
-                      </Box>
-                    </Box>
-
-                    {/* Yield / Profit Metric Cards */}
-                    <Grid container spacing={1} sx={{ mb: 3 }}>
-                      <Grid item xs={4}>
-                        <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#E8F5E8', borderRadius: 2 }}>
-                          <Typography sx={{ fontWeight: 'bold', color: '#2E7D32', fontSize: '1.1rem' }}>
-                            +{story.yieldIncrease}%
-                          </Typography>
-                          <Typography sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
-                            Yield
-                          </Typography>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#E3F2FD', borderRadius: 2 }}>
-                          <Typography sx={{ fontWeight: 'bold', color: '#1976D2', fontSize: '1.1rem' }}>
-                            ₹{(story.profitIncrease >= 100000) ? `${(story.profitIncrease / 100000).toFixed(1)}L` : story.profitIncrease?.toLocaleString()}
-                          </Typography>
-                          <Typography sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
-                            Profit
-                          </Typography>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#FFF3E0', borderRadius: 2 }}>
-                          <Typography sx={{ fontWeight: 'bold', color: '#F57C00', fontSize: '1.1rem' }}>
-                            {story.timeSaved}%
-                          </Typography>
-                          <Typography sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
-                            Time Saved
-                          </Typography>
-                        </Box>
-                      </Grid>
-                    </Grid>
-
-                    {/* Testimonial Quote */}
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        fontStyle: 'italic', 
-                        color: '#555', 
-                        lineHeight: 1.7,
-                        bgcolor: '#F9FFF9',
-                        p: 2.5,
-                        borderRadius: 3,
-                        borderLeft: '4px solid #2E7D32',
-                        mb: 3
+          <Box 
+            sx={{ 
+              position: 'relative', 
+              width: '100%',
+              px: { xs: 0, sm: 6 }, // Extra padding on sides for arrows
+              boxSizing: 'border-box'
+            }}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            {/* Slider Container */}
+            <Box sx={{ overflow: 'hidden', width: '100%', py: 1 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  transform: `translate3d(-${currentIndex * (100 / visibleCount)}%, 0, 0)`,
+                  transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                  width: '100%',
+                }}
+              >
+                {farmerStories.map((story, index) => (
+                  <Box
+                    key={story._id || index}
+                    sx={{
+                      width: `${100 / visibleCount}%`,
+                      flexShrink: 0,
+                      p: 1.5,
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    <Card
+                      sx={{
+                        height: '100%',
+                        borderRadius: 5,
+                        border: '1px solid rgba(46,125,50,0.1)',
+                        transition: 'all 0.3s ease',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.03)',
+                        '&:hover': {
+                          transform: 'translateY(-8px)',
+                          boxShadow: '0 15px 35px rgba(46,125,50,0.15)',
+                        },
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
                       }}
                     >
-                      "{story.testimonial}"
-                    </Typography>
-
-                    {/* Products Badge List */}
-                    <Box>
-                      <Typography variant="caption" sx={{ fontWeight: 'bold', color: 'text.secondary', display: 'block', mb: 1 }}>
-                        PRODUCTS USED:
-                      </Typography>
-                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                        {story.productsUsed?.map((product, idx) => (
-                          <Chip
-                            key={idx}
-                            label={product}
-                            size="small"
-                            sx={{
-                              bgcolor: '#E8F5E8',
-                              color: '#2E7D32',
-                              fontWeight: 'bold',
-                              fontSize: '0.75rem',
-                              border: '1px solid rgba(46,125,50,0.15)'
-                            }}
+                      <CardContent sx={{ p: 4 }}>
+                        {/* Farmer Avatar & Info */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                          <Avatar
+                            src={story.photo}
+                            sx={{ width: 65, height: 65, mr: 2, border: '3px solid #2E7D32', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
                           />
-                        ))}
-                      </Stack>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                          <Box>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1B5E20', lineHeight: 1.2 }}>
+                              {story.name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                              📍 {story.location} • 🌾 {story.crop}
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        {/* Yield / Profit Metric Cards */}
+                        <Grid container spacing={1} sx={{ mb: 3 }}>
+                          <Grid item xs={4}>
+                            <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#E8F5E8', borderRadius: 2 }}>
+                              <Typography sx={{ fontWeight: 'bold', color: '#2E7D32', fontSize: '1.1rem' }}>
+                                +{story.yieldIncrease}%
+                              </Typography>
+                              <Typography sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                                Yield
+                              </Typography>
+                            </Box>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#E3F2FD', borderRadius: 2 }}>
+                              <Typography sx={{ fontWeight: 'bold', color: '#1976D2', fontSize: '1.1rem' }}>
+                                ₹{(story.profitIncrease >= 100000) ? `${(story.profitIncrease / 100000).toFixed(1)}L` : story.profitIncrease?.toLocaleString()}
+                              </Typography>
+                              <Typography sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                                Profit
+                              </Typography>
+                            </Box>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#FFF3E0', borderRadius: 2 }}>
+                              <Typography sx={{ fontWeight: 'bold', color: '#F57C00', fontSize: '1.1rem' }}>
+                                {story.timeSaved}%
+                              </Typography>
+                              <Typography sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                                Time Saved
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        </Grid>
+
+                        {/* Testimonial Quote */}
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            fontStyle: 'italic', 
+                            color: '#555', 
+                            lineHeight: 1.7,
+                            bgcolor: '#F9FFF9',
+                            p: 2.5,
+                            borderRadius: 3,
+                            borderLeft: '4px solid #2E7D32',
+                            mb: 3
+                          }}
+                        >
+                          "{story.testimonial}"
+                        </Typography>
+
+                        {/* Products Badge List */}
+                        <Box>
+                          <Typography variant="caption" sx={{ fontWeight: 'bold', color: 'text.secondary', display: 'block', mb: 1 }}>
+                            PRODUCTS USED:
+                          </Typography>
+                          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                            {story.productsUsed?.map((product, idx) => (
+                              <Chip
+                                key={idx}
+                                label={product}
+                                size="small"
+                                sx={{
+                                  bgcolor: '#E8F5E8',
+                                  color: '#2E7D32',
+                                  fontWeight: 'bold',
+                                  fontSize: '0.75rem',
+                                  border: '1px solid rgba(46,125,50,0.15)'
+                                }}
+                              />
+                            ))}
+                          </Stack>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+
+            {/* Left and Right Nav Buttons (visible on screen size sm and up) */}
+            {maxIndex > 0 && (
+              <>
+                <IconButton
+                  onClick={handlePrev}
+                  disabled={currentIndex === 0}
+                  sx={{
+                    position: 'absolute',
+                    left: { xs: -8, sm: 0 },
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    bgcolor: 'white',
+                    color: '#2E7D32',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    border: '1px solid rgba(46,125,50,0.1)',
+                    zIndex: 3,
+                    '&:hover': { bgcolor: '#F5FAF5' },
+                    '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.5)', color: 'rgba(0,0,0,0.25)' },
+                    display: { xs: 'none', sm: 'inline-flex' }
+                  }}
+                >
+                  <ChevronLeft />
+                </IconButton>
+                <IconButton
+                  onClick={handleNext}
+                  disabled={currentIndex === maxIndex}
+                  sx={{
+                    position: 'absolute',
+                    right: { xs: -8, sm: 0 },
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    bgcolor: 'white',
+                    color: '#2E7D32',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    border: '1px solid rgba(46,125,50,0.1)',
+                    zIndex: 3,
+                    '&:hover': { bgcolor: '#F5FAF5' },
+                    '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.5)', color: 'rgba(0,0,0,0.25)' },
+                    display: { xs: 'none', sm: 'inline-flex' }
+                  }}
+                >
+                  <ChevronRight />
+                </IconButton>
+              </>
+            )}
+
+            {/* Navigation Dots */}
+            {maxIndex > 0 && (
+              <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 3 }}>
+                {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
+                  <Box
+                    key={idx}
+                    onClick={() => setCurrentIndex(idx)}
+                    sx={{
+                      width: idx === currentIndex ? 24 : 8,
+                      height: 8,
+                      borderRadius: 4,
+                      bgcolor: idx === currentIndex ? '#2E7D32' : 'rgba(46, 125, 50, 0.2)',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    }}
+                  />
+                ))}
+              </Stack>
+            )}
+          </Box>
         )}
       </Box>
     </Box>
