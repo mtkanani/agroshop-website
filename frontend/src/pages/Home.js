@@ -57,32 +57,7 @@ const categories = [
   }
 ];
 
-const weatherTips = [
-  {
-    title: 'Monsoon Preparation',
-    content: 'Prepare your fields early. Clear drainage channels and ensure proper soil preparation for the upcoming monsoon season.',
-    icon: '🌧️',
-    color: '#2196F3'
-  },
-  {
-    title: 'Seed Selection',
-    content: 'Choose monsoon-resistant seed varieties. Look for seeds that can withstand heavy rainfall and high humidity.',
-    icon: '🌱',
-    color: '#4CAF50'
-  },
-  {
-    title: 'Pest Management',
-    content: 'Monitor your crops regularly during monsoon. Early detection of pests can save your entire harvest.',
-    icon: '🛡️',
-    color: '#FF9800'
-  },
-  {
-    title: 'Soil Health',
-    content: 'Test your soil pH before planting. Monsoon can affect soil acidity, so adjust your fertilization accordingly.',
-    icon: '🧪',
-    color: '#8BC34A'
-  }
-];
+// Weather tips removed
 
 const stats = [
   { value: '50,000+', label: 'Happy Farmers', icon: '👨‍🌾', color: '#2E7D32' },
@@ -719,55 +694,7 @@ export default function Home() {
         </Grid>
       </Box>
 
-      {/* Weather-based Recommendations with Glass cards */}
-      <Box sx={{ mb: 7, px: { xs: 1, md: 3 } }}>
-        <Typography variant="h4" sx={{ mb: 1, fontWeight: 'bold', color: '#1B5E20' }}>
-          🌤️ Smart Weather Tips & Advice
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
-          Optimize your farming calendar based on current seasonal changes
-        </Typography>
-        
-        <Grid container spacing={3}>
-          {weatherTips.map((tip, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Paper
-                sx={{
-                  p: 4,
-                  height: '100%',
-                  transition: 'all 0.3s ease',
-                  borderRadius: 4,
-                  border: `2px solid ${tip.color}15`,
-                  background: `linear-gradient(135deg, ${tip.color}05, #FFFFFF 100%)`,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.01)',
-                  '&:hover': {
-                    transform: 'translateY(-5px)',
-                    boxShadow: `0 8px 25px ${tip.color}20`,
-                    borderColor: tip.color,
-                  }
-                }}
-              >
-                <Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2.5 }}>
-                    <Typography variant="h3" sx={{ mr: 2 }}>
-                      {tip.icon}
-                    </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333' }}>
-                      {tip.title}
-                    </Typography>
-                  </Box>
-                  <Typography variant="body2" sx={{ lineHeight: 1.7, color: '#555' }}>
-                    {tip.content}
-                  </Typography>
-                </Box>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+      {/* Weather tips removed */}
 
       {/* Farmer Success Stories with Premium Cards */}
       <Box sx={{ mb: 6, px: { xs: 1, md: 3 } }}>
