@@ -149,6 +149,7 @@ function AppNav() {
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
+            width: { xs: 'auto', md: 240 },
             '&:hover': { opacity: 0.8 }
           }}
           onClick={() => navigate('/')}
@@ -156,8 +157,8 @@ function AppNav() {
           🌾 Agro Shop
         </Typography>
         
-        {/* Desktop Navigation Links */}
-        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
+        {/* Desktop Centered Navigation Links */}
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, flexGrow: 1, justifyContent: 'center', gap: 1.5 }}>
           <Button 
             color="inherit" 
             onClick={() => navigate('/')}
@@ -176,7 +177,7 @@ function AppNav() {
           >
             Contact
           </Button>
-          {userInfo ? (
+          {userInfo && (
             <>
               <Button 
                 color="inherit" 
@@ -207,13 +208,19 @@ function AppNav() {
                   Admin
                 </Button>
               )}
-              <Button 
-                color="inherit" 
-                onClick={handleLogout}
-              >
-                Logout
-              </Button>
             </>
+          )}
+        </Box>
+
+        {/* Desktop Right Side Logout / Auth Actions */}
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, width: 240, justifyContent: 'flex-end', gap: 1 }}>
+          {userInfo ? (
+            <Button 
+              color="inherit" 
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
           ) : (
             <>
               <Button 
